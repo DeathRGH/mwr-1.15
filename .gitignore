@@ -1,0 +1,4 @@
+.vs/
+MWR 1.15/build/
+MWR 1.15/x64/
+*.elf
