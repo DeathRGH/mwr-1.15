@@ -52,16 +52,15 @@ void LUI_CoD_Render_Hook(LocalClientNum_t rdi, int rsi) {
 	//LUI_Interface_DrawRectangle(rootElem, 100.0f, 200.0f, 300.0f, 500.0f, 100.0f, 200.0f, 100.0f, 200.0f, 300.0f, 400.0f, 600.0f, Material_RegisterHandle("white", 0), red10, (LUI_QuadRenderMode)0, true, lua_state);
 }
 
-void LUI_Interface_DebugPrint_Hook(const char *fmt, ...) {
-	char buffer[2048];
-	va_list args;
-	va_start(args, fmt);
-	vsprintf(buffer, fmt, args);
-	va_end(args);
+void LUI_LuaCall_DebugPrint(lua_State *rdi) {
+	HksObject *rsi = (HksObject *)(*(uint64_t *)((uint64_t)rdi + 0x50));
+	unsigned long *rdx = (unsigned long *)((uint64_t)rdi + 0x48);
 
-	char buffer2[2048];
-	snprintf(buffer2, sizeof(buffer2), "[AW 1.24] <LUI> %s", buffer);
-	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buffer2);
+	if ((uint64_t)rsi < *(uint64_t *)((uint64_t)rdi + 0x48))
+		rdx = 0;
+
+	const char *ret = hks_obj_tolstring(rdi, rsi, rdx);
+	LUI_Interface_DebugPrint("%s\n", ret);
 }
 
 void LUIElement_Render_Hook(LocalClientNum_t rdi, LUIElement *rsi, LUIElement *rdx, RootUserData *rcx, int r8d, lua_State *r9, float xmm0) {
@@ -145,7 +144,12 @@ void SV_Cmd_TokenizeString_Hook(const char *text_in) {
 void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, VariableValue *top) {
 	if (true) {
 		const char *notifyString = SL_ConvertToString(stringValue);
-		int entityNum = Scr_GetSelf(notifyListOwnerId);
+		//int entityNum = Scr_GetSelf(notifyListOwnerId);
+
+		//char temp[100];
+		//snprintf(temp, sizeof(temp), "f \"%s\"", notifyString);
+		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);	
+
 		if (!strcmp(notifyString, "player_spawned")) {
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"player_spawned\"");
 
@@ -156,18 +160,18 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
 
-			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
-			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
-			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
-			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
-			Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
+			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
+			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
+			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
+			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
+			///Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
 			//ClientInfo[spawnedClientIndex].IsAlive = true;
 			//EnableMenu(spawnedClientIndex, host);
 		}
-		if (!strcmp(notifyString, "DPAD_UP")) {
+		/*if (!strcmp(notifyString, "DPAD_UP")) {
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_UP\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
@@ -217,7 +221,7 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 			
 			*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
-		}
+		}*/
 	}
 
 	VM_Notify_Stub(notifyListOwnerId, stringValue, top);

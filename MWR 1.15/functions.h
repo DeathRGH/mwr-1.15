@@ -6,8 +6,6 @@
 
 typedef void(*AngleVectors_t)(const float *angles, float *forward, float *right, float *up);
 
-typedef void(*Cbuf_AddText_t)(LocalClientNum_t localClientNum, const char *text);
-
 typedef void(*Cmd_RegisterNotification_t)(int clientNum, const char *commandString, const char *notifyString);
 typedef void(*Cmd_TokenizeStringKernel_t)(const char *text_in, int max_tokens, CmdArgs *args, CmdArgsPrivate *argsPriv);
 
@@ -29,6 +27,8 @@ typedef gentity_s *(*G_Spawn_t)();
 
 typedef void(*GScr_MapRestart_t)();
 
+typedef const char *(*hks_obj_tolstring_t)(lua_State *, HksObject *, unsigned long *);
+
 typedef game_hudelem_t(*HudElem_Alloc_t)(int clientNum, int teamNum);
 typedef void(*HudElem_DestroyAll_t)();
 
@@ -36,8 +36,6 @@ typedef LUIElement *(*LUI_GetRootElement_t)(const char *, lua_State *);
 typedef void(*LUI_Interface_DrawLine_t)(LUIElement *, float x1, float y1, float x2, float y2, unsigned char, float, float r, float g, float b, float a);
 
 typedef Material *(*Material_RegisterHandle_t)(const char *name, int imageTrack);
-
-typedef void(*Menus_OpenByName_t)(UiContext *, const char *);
 
 typedef void(*PlayerCmd_AllowBoostJump_t)(scr_entref_t entref);
 typedef void(*PlayerCmd_AllowDodge_t)(scr_entref_t entref);
@@ -62,17 +60,15 @@ typedef void(*Scr_AddEntity_t)(const gentity_s *);
 typedef void(*Scr_AddInt_t)(int value);
 typedef void(*Scr_AddString_t)(const char *value);
 typedef void(*Scr_AddVector_t)(const float *value);
-typedef unsigned int(*Scr_GetSelf_t)(unsigned int threadId);
 typedef void(*Scr_MagicBullet_t)();
 typedef void(*Scr_NotifyNum_t)(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount);
 
-typedef const char *(*SL_ConvertToString_t)(scr_string_t stringValue);
 typedef scr_string_t(*SL_GetString_t)(const char *str, unsigned int user);
 
 typedef void(*SP_script_model_t)(gentity_s *);
 
-typedef void(*SV_GameSendServerCommand_t)(signed char clientNum, svscmd_type type, const char *text);
 typedef void(*SV_LinkEntity_t)(gentity_s *);
+typedef void(*SV_SendServerCommand_t)(client_t *, svscmd_type, const char *, ...);
 typedef void(*SV_SetBrushModel_t)(gentity_s *);
 typedef void(*SV_UnlinkEntity_t)(gentity_s *);
 
@@ -81,8 +77,6 @@ typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 //
 
 extern AngleVectors_t AngleVectors;
-
-extern Cbuf_AddText_t Cbuf_AddText;
 
 extern Cmd_RegisterNotification_t Cmd_RegisterNotification;
 extern Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
@@ -105,6 +99,8 @@ extern G_Spawn_t G_Spawn;
 
 extern GScr_MapRestart_t GScr_MapRestart;
 
+extern hks_obj_tolstring_t hks_obj_tolstring;
+
 extern HudElem_Alloc_t HudElem_Alloc;
 extern HudElem_DestroyAll_t HudElem_DestroyAll;
 
@@ -112,8 +108,6 @@ extern LUI_GetRootElement_t LUI_GetRootElement;
 extern LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
 
 extern Material_RegisterHandle_t Material_RegisterHandle;
-
-extern Menus_OpenByName_t Menus_OpenByName;
 
 extern PlayerCmd_AllowBoostJump_t PlayerCmd_AllowBoostJump;
 extern PlayerCmd_AllowDodge_t PlayerCmd_AllowDodge;
@@ -138,17 +132,15 @@ extern Scr_AddEntity_t Scr_AddEntity;
 extern Scr_AddInt_t Scr_AddInt;
 extern Scr_AddString_t Scr_AddString;
 extern Scr_AddVector_t Scr_AddVector;
-extern Scr_GetSelf_t Scr_GetSelf;
 extern Scr_MagicBullet_t Scr_MagicBullet;
 extern Scr_NotifyNum_t Scr_NotifyNum;
 
-extern SL_ConvertToString_t SL_ConvertToString;
 extern SL_GetString_t SL_GetString;
 
 extern SP_script_model_t SP_script_model;
 
-extern SV_GameSendServerCommand_t SV_GameSendServerCommand;
 extern SV_LinkEntity_t SV_LinkEntity;
+extern SV_SendServerCommand_t SV_SendServerCommand;
 extern SV_SetBrushModel_t SV_SetBrushModel;
 extern SV_UnlinkEntity_t SV_UnlinkEntity;
 
@@ -176,7 +168,6 @@ typedef bool (*AimTarget_IsTargetVisible_t)(LocalClientNum_t localClientNum, uin
 typedef bool(*CG_CanSeeFriendlyHeadTrace_t)(int localClientNum, uint64_t cent, const float *start, const float *end);
 typedef bool (*CG_DObjGetWorldTagPos_t)(uint64_t ent, int obj, unsigned short tagName, float *pos);
 typedef void (*CG_DrawRotatedPicPhysical_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, float angle, const float *color, uint64_t material, uint64_t image);
-//typedef void(*CG_TracePoint_t)(trace_t *results, const float *start, const float *end, int passEntityNum, unsigned int contentMask, bool locational, bool staticModels, bool checkRopes, col_context_t *context, bool checkGlass);
 
 typedef void (*CL_DrawText_t)(const unsigned int scrPlace, const char *text, int maxChars, int font, float x, float y, int horzAlign, int vertAlign, float xScale, float yScale, const float *color, int style);
 
@@ -187,18 +178,13 @@ typedef unsigned short (*SL_GetStringOfSize_t)(const char *str, unsigned int use
 typedef void(*UI_DrawText_t)(const ScreenPlacement *screenPlacement, const char *text, int maxChars, uint64_t font, float x, float y, int horzAlign, int vertAlign, float scale, const float *color, int style, LocalClientNum_t localClientNum);
 typedef void(*UI_FillRectPhysical_t)(float x, float y, float w, float h, const float *color);
 
-typedef unsigned short(*sub_E9F770_t)(const char *str, unsigned int user, unsigned int u1);
-
 //External
 extern AimTarget_GetTagPos_t AimTarget_GetTagPos;
 extern AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 
-extern Cbuf_AddText_t Cbuf_AddText;
-
 extern CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 extern CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
 extern CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
-//extern CG_TracePoint_t CG_TracePoint;
 
 extern CL_DrawText_t CL_DrawText;
 
@@ -209,8 +195,6 @@ extern SL_GetStringOfSize_t SL_GetStringOfSize;
 extern UI_DrawText_t UI_DrawText;
 extern UI_FillRectPhysical_t UI_FillRectPhysical;
 
-extern sub_E9F770_t sub_E9F770;
-
 //Custom
 extern void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos);
 extern bool AimTarget_IsTargetVisible_Custom(int targetEntNum, const char *visBone);
@@ -218,7 +202,19 @@ extern bool AimTarget_IsTargetVisible_Custom(int targetEntNum, const char *visBo
 extern bool Dvar_GetBool(const char *dvarName);
 extern const char *Dvar_GetString(const char *dvarName);
 
+//MWR
+
+void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text);
+
+void LUI_Interface_DebugPrint(const char *fmt, ...);
+
+unsigned int Scr_GetSelf(unsigned int threadId);
 void Scr_SetNumParam(int paramcount);
+
+const char *SL_ConvertToString(scr_string_t stringValue);
+const char *SL_ConvertToStringSafe(scr_string_t stringValue);
+
+void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const char *text);
 
 #include "global.h"
 NAMESPACE(Functions)

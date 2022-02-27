@@ -22,7 +22,7 @@ extern VM_Notify_t VM_Notify_Stub;
 void ClientThink_real_Hook(gentity_s *ent, usercmd_s *ucmd);
 
 void LUI_CoD_Render_Hook(LocalClientNum_t rdi, int rsi);
-void LUI_Interface_DebugPrint_Hook(const char *fmt, ...);
+void LUI_LuaCall_DebugPrint(lua_State *);
 
 void LUIElement_Render_Hook(LocalClientNum_t rdi, LUIElement *rsi, LUIElement *rdx, RootUserData *rcx, int r8d, lua_State *r9, float xmm0);
 

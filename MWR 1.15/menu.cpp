@@ -265,7 +265,7 @@ int ticks = 0;
 int speed = 0;
 ScePadData padData;
 void MonitorButtons() {
-	uartprintf("[AW 1.24] MonitorButtons() -> THREAD STARTED!\n");
+	uartprintf("[MWR 1.15] MonitorButtons() -> THREAD STARTED!\n");
 	while (ShouldRun()) {
 		if (!userPadHandle) {
 			Sleep(10);
@@ -414,24 +414,28 @@ void MonitorButtons() {
 		Sleep(10);
 	}
 
-	uartprintf("[AW 1.24] MonitorButtons() -> THREAD ENDED!\n");
+	uartprintf("[MWR 1.15] MonitorButtons() -> THREAD ENDED!\n");
 }
 
 void LoopSettings() {
-	uartprintf("[AW 1.24] LoopSettings() -> THREAD STARTED!\n");
+	uartprintf("[MWR 1.15] LoopSettings() -> THREAD STARTED!\n");
 	while (ShouldRun()) {
-		Cache::CacheAll();
+		//Cache::CacheAll();
 
-		Host::Lobby::Godmode(Options.debug_godmode.state);
-		Host::Lobby::InfiniteAmmo(Options.debug_infAmmo.state);
+		//Host::Lobby::Godmode(Options.debug_godmode.state);
+		//Host::Lobby::InfiniteAmmo(Options.debug_infAmmo.state);
 
-		*(float *)(*(uint64_t *)cg_fov + dvar_s_current) = 90.0f;
+		//*(float *)(*(uint64_t *)cg_fov + dvar_s_current) = 90.0f;
 
-		*(char *)0x00000000007D6F90 = Options.menuOpen ? 0xC3 : 0x55; //GPad_UpdateDigitals
+		//*(char *)0x00000000007D6F90 = Options.menuOpen ? 0xC3 : 0x55; //GPad_UpdateDigitals
+
+
+		//crosshair drawing (4 calls to CL_DrawStretchPic)
+		//00000000008D84DC                 call    CL_DrawStretchPic
 		Sleep(10);
 	}
 
-	uartprintf("[AW 1.24] LoopSettings() -> THREAD ENDED!\n");
+	uartprintf("[MWR 1.15] LoopSettings() -> THREAD ENDED!\n");
 }
 
 void DrawDebug() {

@@ -118,18 +118,18 @@ gentity_s *FindCollision(const char *name) {
 		// check if it is a brushmodel
 		if (*(uint8_t *)((uint8_t *)ent + 0x101) == 4) {
 			const char *targetname = SL_ConvertToString(ent->targetname);
-			//uartprintf("[AW 1.24] FindCollision(%s) -> %i %s\n", name, i, targetname);
+			//uartprintf("[MWR 1.15] FindCollision(%s) -> %i %s\n", name, i, targetname);
 			if (targetname) {
 				// see d3dbsp files for maps
 				if (!strcmp(targetname, name)) {
-					//uartprintf("[AW 1.24] FindCollision(%s) -> 0x%llX (%i): %s\n", name, ent, i, targetname);
+					//uartprintf("[MWR 1.15] FindCollision(%s) -> 0x%llX (%i): %s\n", name, ent, i, targetname);
 					return ent;
 				}
 			}
 		}
 	}
 
-	uartprintf("[AW 1.24] FindCollision(%s) -> Collision for \"%s\" not found!\n", name, name);
+	uartprintf("[MWR 1.15] FindCollision(%s) -> Collision for \"%s\" not found!\n", name, name);
 	return 0;
 }
 
@@ -229,7 +229,7 @@ void PickupEntity(gentity_s *player) {
 }
 
 void MoveForgeEntities() {
-	uartprintf("[AW 1.24] MoveForgeEntities() -> THREAD STARTED!\n");
+	uartprintf("[MWR 1.15] MoveForgeEntities() -> THREAD STARTED!\n");
 	while (ShouldRun()) {
 		if (!Cache::Game.inGame) {
 			Sleep(10);
@@ -243,7 +243,7 @@ void MoveForgeEntities() {
 		Sleep(10);
 	}
 
-	uartprintf("[AW 1.24] MoveForgeEntities() -> THREAD ENDED!\n");
+	uartprintf("[MWR 1.15] MoveForgeEntities() -> THREAD ENDED!\n");
 }
 
 END

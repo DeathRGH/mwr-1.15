@@ -1,8 +1,8 @@
 #include "functions.h"
 
-AngleVectors_t AngleVectors;
+#include "imports.h"
 
-Cbuf_AddText_t Cbuf_AddText;
+AngleVectors_t AngleVectors;
 
 Cmd_RegisterNotification_t Cmd_RegisterNotification;
 Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
@@ -25,6 +25,8 @@ G_Spawn_t G_Spawn;
 
 GScr_MapRestart_t GScr_MapRestart;
 
+hks_obj_tolstring_t hks_obj_tolstring;
+
 HudElem_Alloc_t HudElem_Alloc;
 HudElem_DestroyAll_t HudElem_DestroyAll;
 
@@ -32,8 +34,6 @@ LUI_GetRootElement_t LUI_GetRootElement;
 LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
 
 Material_RegisterHandle_t Material_RegisterHandle;
-
-Menus_OpenByName_t Menus_OpenByName;
 
 PlayerCmd_AllowBoostJump_t PlayerCmd_AllowBoostJump;
 PlayerCmd_AllowDodge_t PlayerCmd_AllowDodge;
@@ -58,17 +58,15 @@ Scr_AddEntity_t Scr_AddEntity;
 Scr_AddInt_t Scr_AddInt;
 Scr_AddString_t Scr_AddString;
 Scr_AddVector_t Scr_AddVector;
-Scr_GetSelf_t Scr_GetSelf;
 Scr_MagicBullet_t Scr_MagicBullet;
 Scr_NotifyNum_t Scr_NotifyNum;
 
-SL_ConvertToString_t SL_ConvertToString;
 SL_GetString_t SL_GetString;
 
 SP_script_model_t SP_script_model;
 
-SV_GameSendServerCommand_t SV_GameSendServerCommand;
 SV_LinkEntity_t SV_LinkEntity;
+SV_SendServerCommand_t SV_SendServerCommand;
 SV_SetBrushModel_t SV_SetBrushModel;
 SV_UnlinkEntity_t SV_UnlinkEntity;
 
@@ -91,7 +89,6 @@ AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
 CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
-//CG_TracePoint_t CG_TracePoint;
 
 CL_DrawText_t CL_DrawText;
 
@@ -101,8 +98,6 @@ SL_GetStringOfSize_t SL_GetStringOfSize;
 
 UI_DrawText_t UI_DrawText;
 UI_FillRectPhysical_t UI_FillRectPhysical;
-
-sub_E9F770_t sub_E9F770;
 
 //Custom
 void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos) {
@@ -150,6 +145,57 @@ const char *Dvar_GetString(const char *dvarName) {
 		return *(const char **)(dvar_s + 0x10);
 }
 
-void Scr_SetNumParam(int paramcount) {
-	*(int*)(0x000000000A6C6098 + 0x2C) = paramcount;
+//MWR
+
+void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text) { //reversed from 0x000000000075D702 (GScr_EndLobby + 0xE2)
+	//we ignore the localClientNum param for now
+	int stringLength = strlen(text);
+	strcpy((char *)(*(uint64_t *)0x0000000002DBF390), text);
+	*(char *)(*(uint64_t *)0x0000000002DBF390 + stringLength + 1) = 0;
+	*(int *)(0x0000000002DBF390 + 0x0C) = stringLength + 1;
+}
+
+void LUI_Interface_DebugPrint(const char *fmt, ...) { //custom
+	char buffer[2048];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(buffer, fmt, args);
+	va_end(args);
+
+	char buffer2[2048];
+	snprintf(buffer2, sizeof(buffer2), "[MWR 1.15] <LUI> %s", buffer);
+	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buffer2);
+}
+
+unsigned int Scr_GetSelf(unsigned int threadId) { //reversed from 0x0000000000BE2525 (Scr_CancelNotifyList + 0x25)
+	//lea r12, word_F52A000
+	//mov r8w, [r12+r15*8+2] //r15 = threadId
+	return (unsigned int)(*(unsigned short *)(0x000000000F52A000 + (threadId * 8) + 2));
+}
+
+void Scr_SetNumParam(int paramcount) { //reversed from 0x0000000000A4E076 (GScr_notifyOnPlayerCommand + 0x06)
+	*(int *)0x000000000FBC6E34 = paramcount;
+}
+
+const char *SL_ConvertToString(scr_string_t stringValue) { //reversed from 0x0000000000B1C672
+	if (!stringValue)
+		return 0;
+
+	return (const char *)(*(uint64_t *)0x000000000F0A1D58 + (stringValue << 4) + 8);
+}
+
+const char *SL_ConvertToStringSafe(scr_string_t stringValue) { //reversed from 0x0000000000B1C672
+	if (!stringValue)
+		return "(NULL)";
+
+	return SL_ConvertToString(stringValue);
+}
+
+void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const char *text) { //reversed from 0x0000000000A4D03A (VisionSetForPlayer + 0xEA)
+	if (clientNum == -1)
+		SV_SendServerCommand(0, type, text);
+	else {
+		uint64_t client_s = *(uint64_t *)(0x00000000026B7E10) + (clientNum * 0xE7680);
+		SV_SendServerCommand((client_t *)client_s, type, text);
+	}
 }
