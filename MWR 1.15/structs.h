@@ -8,6 +8,10 @@ typedef unsigned short scr_string_t;
 
 //
 
+enum ConfigString {
+	//...
+};
+
 enum GfxRenderCommand {
 	//...
 };
@@ -58,7 +62,7 @@ enum XAssetType
 	//ASSET_TYPE_GLASSWORLD = 0x19, ///G_InitGlass + 0x42   mov edi, 19h
 	//ASSET_TYPE_PATHDATA = 0x1A,
 	//ASSET_TYPE_VEHICLE_TRACK = 0x1B,
-	//ASSET_TYPE_MAP_ENTS = 0x1C,
+	ASSET_TYPE_MAP_ENTS = 0x1C,
 	//ASSET_TYPE_FXWORLD = 0x1D, ///FX_LoadWorld + 0x07   mov edi, 1Dh
 	//ASSET_TYPE_GFXWORLD = 0x1E,
 	//ASSET_TYPE_LIGHT_DEF = 0x1F, ///R_InitLightDefs + 0x0B   mov edi, 1Fh
@@ -136,36 +140,40 @@ struct usercmd_s { // 0x44
 };
 
 struct gclient_s {
+	//mwr:
+	//0x5C fof flag
 	//...
-	int serverTime;		//0x4C
+	int serverTime;		//0x4C //NOT UPDATED
 	//...
-	usercmd_s *ucmd;	//0x4F9C
-	usercmd_s *olducmd;	//0x4FE0
+	usercmd_s *ucmd;	//0x4F9C //NOT UPDATED
+	usercmd_s *olducmd;	//0x4FE0 //NOT UPDATED
 	//...
 };
 
 struct gentity_s { // 0x2E0
-	short number;			//0x00   //Scr_Notify + 0x04   movsx edi, word ptr [rdi]
-	short type;				//0x02
+	//mwr:
+	//0x3C viewmodel
+	short number;			//0x00 //NOT UPDATED
+	short type;				//0x02 //NOT UPDATED
 	char _pad0[0x88];		//0x04
-	float angles[3];		//0x8C
+	float angles[3];		//0x8C //NOT UPDATED //0x144 ???
 	char _pad1[0xA0];		//0x98
 	float origin[3];		//0x138
 	char _pad2[0x14];		//0x144
-	gclient_s *client;		//0x158   //G_SetModel + 0x23   mov rbx, [r15+158h]
+	gclient_s *client;		//0x158
 	char _pad3[0x28];		//0x160
-	short modelIndex;		//0x188   //G_SetModel + 0x82   mov [r15+188h], ax
+	short modelIndex;		//0x188
 	char _pad4[0x0A];		//0x18A
-	int classname;			//0x194   //ScriptEntCmd_Solid + 0x5F   mov eax, [rbx+194h]
-	int script_classname;	//0x198
-	int script_linkName;	//0x19C
-	int target;				//0x1A0
-	int targetname;			//0x1A4
-	int u1;					//0x1A8
-	int spawnflags;			//0x1AC
+	int classname;			//0x194   //ScriptEntCmd_Solid + 0x5F   mov eax, [rbx+194h]  //NOT UPDATED
+	int script_classname;	//0x198 //NOT UPDATED
+	int script_linkName;	//0x19C //NOT UPDATED
+	int target;				//0x1A0 //NOT UPDATED
+	int targetname;			//0x1A4 //NOT UPDATED
+	int u1;					//0x1A8 //NOT UPDATED
+	int spawnflags;			//0x1AC //NOT UPDATED
 	//...
-	int health;				//0x1D0
-	int maxHealth;			//0x1D4
+	int health;				//0x1D0 //NOT UPDATED
+	int maxHealth;			//0x1D4 //NOT UPDATED
 	//...
 };
 

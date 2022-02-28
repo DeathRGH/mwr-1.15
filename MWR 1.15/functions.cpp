@@ -4,12 +4,12 @@
 
 AngleVectors_t AngleVectors;
 
-Cmd_RegisterNotification_t Cmd_RegisterNotification;
 Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
 G_DObjGetWorldTagPos_t G_DObjGetWorldTagPos;
+G_FindConfigstringIndex_t G_FindConfigstringIndex;
 G_FreeEntity_t G_FreeEntity;
 G_GetAngles_t G_GetAngles;
 G_GetOrigin_t G_GetOrigin;
@@ -19,8 +19,6 @@ G_LocationalTrace_t G_LocationalTrace;
 G_MaterialIndex_t G_MaterialIndex;
 G_ModelName_t G_ModelName;
 G_SetAngle_t G_SetAngle;
-G_SetModel_t G_SetModel;
-G_SetOrigin_t G_SetOrigin;
 G_Spawn_t G_Spawn;
 
 GScr_MapRestart_t GScr_MapRestart;
@@ -61,7 +59,7 @@ Scr_AddVector_t Scr_AddVector;
 Scr_MagicBullet_t Scr_MagicBullet;
 Scr_NotifyNum_t Scr_NotifyNum;
 
-SL_GetString_t SL_GetString;
+SL_GetStringOfSize_t SL_GetStringOfSize;
 
 SP_script_model_t SP_script_model;
 
@@ -93,8 +91,6 @@ CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 CL_DrawText_t CL_DrawText;
 
 R_AddCmdDrawQuadPicW_t R_AddCmdDrawQuadPicW;
-
-SL_GetStringOfSize_t SL_GetStringOfSize;
 
 UI_DrawText_t UI_DrawText;
 UI_FillRectPhysical_t UI_FillRectPhysical;
@@ -155,6 +151,44 @@ void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text) { //reverse
 	*(int *)(0x0000000002DBF390 + 0x0C) = stringLength + 1;
 }
 
+void Cmd_RegisterNotification(int clientNum, const char *commandString, const char *notifyString) { //reversed from 0x0000000000A4E227 (GScr_notifyOnPlayerCommand + 0x1F7)
+	int numOfNotifications = *(int *)0x0000000002DC9610;
+	if (numOfNotifications == 512)
+		return;
+
+	scr_string_t bindString = SL_GetString(notifyString, 0);
+	uint64_t newCommandStart = 0x0000000002DC9620 + (numOfNotifications * 0x0C);
+	*(int *)newCommandStart = clientNum;
+	*(int *)(newCommandStart + 0x04) = Key_GetBindingForCmd(commandString);
+	*(scr_string_t *)(newCommandStart + 0x08) = bindString;
+	*(int *)0x0000000002DC9610 = ++numOfNotifications;
+}
+
+int G_ModelIndex(const char *name) { //reversed from 0x0000000000A45DCD (PlayerCmd_SetViewmodel + 0xCD)
+	return G_FindConfigstringIndex(name, (ConfigString)0x4D8, 0x400, 0, "model");
+	//G_HasCachedModel and G_SetCachedModel still missing, works fine without
+}
+
+void G_SetModel(gentity_s *ent, const char *modelName) { //custom
+	ent->modelIndex = G_ModelIndex(modelName);
+}
+
+void G_SetOrigin(gentity_s *ent, const float *origin) { //custom
+	ent->origin[0] = origin[0];
+	ent->origin[1] = origin[1];
+	ent->origin[2] = origin[2];
+}
+
+int Key_GetBindingForCmd(const char *cmd) { //reversed from 0x0000000000A4E0E6 (GScr_notifyOnPlayerCommand + 0xB6)
+	uint64_t *g_bindCommands = (uint64_t *)0x000000000104EAA0;
+
+	for (int i = 0; i < 45; i++)
+		if (!strcmp((const char *)g_bindCommands[i], cmd))
+			return i;
+
+	return 0;
+}
+
 void LUI_Interface_DebugPrint(const char *fmt, ...) { //custom
 	char buffer[2048];
 	va_list args;
@@ -189,6 +223,12 @@ const char *SL_ConvertToStringSafe(scr_string_t stringValue) { //reversed from 0
 		return "(NULL)";
 
 	return SL_ConvertToString(stringValue);
+}
+
+scr_string_t SL_GetString(const char *str, unsigned int user) { //reversed from 0x0000000000A4E151 (GScr_notifyOnPlayerCommand + 0x121)
+	int len = strlen(str) + 1;
+
+	return SL_GetStringOfSize(str, user, len, 0);
 }
 
 void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const char *text) { //reversed from 0x0000000000A4D03A (VisionSetForPlayer + 0xEA)

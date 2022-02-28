@@ -144,7 +144,7 @@ void SV_Cmd_TokenizeString_Hook(const char *text_in) {
 void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, VariableValue *top) {
 	if (true) {
 		const char *notifyString = SL_ConvertToString(stringValue);
-		//int entityNum = Scr_GetSelf(notifyListOwnerId);
+		int entityNum = Scr_GetSelf(notifyListOwnerId);
 
 		//char temp[100];
 		//snprintf(temp, sizeof(temp), "f \"%s\"", notifyString);
@@ -160,43 +160,38 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
 
-			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
-			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
-			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
-			///Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
-			///Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
+			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
+			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
+			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
+			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
+			Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
 			//ClientInfo[spawnedClientIndex].IsAlive = true;
 			//EnableMenu(spawnedClientIndex, host);
 		}
-		/*if (!strcmp(notifyString, "DPAD_UP")) {
+		if (!strcmp(notifyString, "DPAD_UP")) {
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_UP\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
-			//float pos[3];
-			//G_GetOrigin(LocalClientNum_t::LOCAL_CLIENT_0, entityNum, pos);
-			float pos[3] = { 0.0f, 0.0f, 1000000.0f };
-			gentity_s *ent = Host::Entity::SpawnScriptModel("com_plasticcase_green_big_us_dirt", pos);
-			//float newAngles[3] = { 0.0f, 0.0f, 180.0f };
-			//G_SetAngle(ent, newAngles);
-
-			gentity_s *collision = Host::Entity::FindCollision("pf1_auto1");//pf13_auto1
-			Host::Entity::CloneBrushModelToScriptModel(ent, collision);
-			Host::Entity::Solid(ent);
-			Host::Forge::clientCurrentEntity[entityNum] = ent;
+			//float pos[3] = { 0.0f, 0.0f, 1000000.0f };
+			//gentity_s *ent = Host::Entity::SpawnScriptModel("com_plasticcase_green_big_us_dirt", pos);
+			//gentity_s *collision = Host::Entity::FindCollision("pf1_auto1");//pf13_auto1
+			//Host::Entity::CloneBrushModelToScriptModel(ent, collision);
+			//Host::Entity::Solid(ent);
+			//Host::Forge::clientCurrentEntity[entityNum] = ent;
 		}
 		if (!strcmp(notifyString, "DPAD_DOWN")) {
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_DOWN\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
-			if (Host::Forge::clientCurrentEntity[entityNum] != 0)
+			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				Host::Forge::clientCurrentEntity[entityNum] = 0;
 			else
-				Host::Forge::PickupEntity(Host::Entity::GetEntityPtr(entityNum));
+				Host::Forge::PickupEntity(Host::Entity::GetEntityPtr(entityNum))*/;
 		}
 		if (!strcmp(notifyString, "DPAD_LEFT")) {
 			char temp[100];
@@ -208,20 +203,29 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_RIGHT\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
-			if (Host::Forge::clientCurrentEntity[entityNum] != 0)
+			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				G_FreeEntity(Host::Forge::clientCurrentEntity[entityNum]);
 			else
 				Host::Forge::DeleteEntity(Host::Entity::GetEntityPtr(entityNum));
 
-			Host::Forge::clientCurrentEntity[entityNum] = 0;
+			Host::Forge::clientCurrentEntity[entityNum] = 0;*/
 		}
 		if (!strcmp(notifyString, "BTN_R1")) {
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit BTN_R1\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 			
-			*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
-		}*/
+			//*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
+
+			float playerPos[3];
+			playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];
+			playerPos[1] = Host::Entity::GetEntityPtr(entityNum)->origin[1];
+			playerPos[2] = Host::Entity::GetEntityPtr(entityNum)->origin[2];
+			Host::Entity::SpawnScriptModel("com_plasticcase_beige_big", playerPos);
+			//should try to use the script cmd for cloning here as it at most pushes 2 ents
+
+			//gentity_s *collision = Host::Entity::FindCollision("pf1958_auto1");
+		}
 	}
 
 	VM_Notify_Stub(notifyListOwnerId, stringValue, top);

@@ -104,8 +104,8 @@ void DetectGame() {
 		///WriteJump(0x0000000000766450, (uint64_t)Hooks::Scr_Notify_Hook);
 		///WriteJump(0x00000000007F6CC0, (uint64_t)Hooks::SV_Cmd_TokenizeString_Hook);
 
-		///uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_venus.d3dbsp", 0);
-		///uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
+		//uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_shipment.d3dbsp", 0);
+		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
 
 		///PrintLoadedZones();
 		///uartprintf("[MWR 1.15] %s", Host::Entity::GetModelNameFromEntity(0));
@@ -116,7 +116,7 @@ void DetectGame() {
 
 		///GScr_MapRestart();
 
-		//Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 120");
+		Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 90");
 		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "c \"^2Dizz ^7is bae ^1<3\"");
 		//uartprintf("[MWR 1.15] SL_ConvertToString: %s\n", SL_ConvertToString((scr_string_t)0x16)); //(0x168 - 8) >> 4 = 0x16
 	}

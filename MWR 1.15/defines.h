@@ -11,20 +11,13 @@
 #define ScrPlace (ScreenPlacement *)0x00//vHandler->defs.addr_CustomScreenPlacement
 #define bg_weaponCompleteDefs 0x3DF7400 //
 
-#define gentity_t 0x00000000064293D0
+#define gentity_t 0x000000000B187AA0
 #define gentity_size 0x2E0
-#define gclient_t 0x000000000659C180
-#define gclient_size 0x5780
-#define lua_state (lua_State *)(*(uint64_t *)0x00000000025A6920)
-#define UI_Context (UiContext *)0x000000000B80C540
-#define scr_const 0x00000000066B4500
-
-//00000000026EE8A0 weapondef ( & 0x3FF)
-
-//0x00000000064293D0 //gentity //0x2E0
-
-//0x000000000659C180 //gclient //0x5780
-//0x5370 - mflag
+#define gclient_t 0x000000000659C180 //
+#define gclient_size 0x5780 //
+#define lua_state (lua_State *)(*(uint64_t *)0x00000000025A6920) //
+#define UI_Context (UiContext *)0x000000000B80C540 //
+#define scr_const 0x00000000066B4500 //
 
 #define SV_CMD_R2_DOWN			"n 1"
 #define SV_CMD_R2_UP			"n 2"
@@ -67,9 +60,9 @@
 //1 = int
 //6 = string
 
-#define cg_fov 0x0000000000F2FF08
+#define cg_fov 0x0000000000F2FF08 //
 
-#define cl_ingame 0x00000000027AB638
+#define cl_ingame 0x00000000027AB638 //
 
 #define FONT_DEFAULT 0x00 //vHandler->defs.addr_Font_Default
 

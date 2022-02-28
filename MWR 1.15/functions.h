@@ -6,23 +6,21 @@
 
 typedef void(*AngleVectors_t)(const float *angles, float *forward, float *right, float *up);
 
-typedef void(*Cmd_RegisterNotification_t)(int clientNum, const char *commandString, const char *notifyString);
 typedef void(*Cmd_TokenizeStringKernel_t)(const char *text_in, int max_tokens, CmdArgs *args, CmdArgsPrivate *argsPriv);
 
 typedef uint64_t(*DB_FindXAssetHeader_t)(XAssetType type, const char *name, int allowCreateDefault);
 
-typedef int(*G_DObjGetWorldTagPos_t)(const gentity_s *, scr_string_t, float *);
-typedef void(*G_FreeEntity_t)(gentity_s *);
+typedef int(*G_DObjGetWorldTagPos_t)(const gentity_s *ent, scr_string_t tagName, float *pos);
+typedef int(*G_FindConfigstringIndex_t)(const char *name, ConfigString start, unsigned int max, int create, const char *errormsg);
+typedef void(*G_FreeEntity_t)(gentity_s *ed);
 typedef void(*G_GetAngles_t)(LocalClientNum_t localClientNum, short entIndex, float *outAngles);
 typedef void(*G_GetOrigin_t)(LocalClientNum_t localClientNum, short entIndex, float *outPosition);
-typedef void(*G_GetPlayerViewOrigin_t)(const playerState_s *, float *);
+typedef void(*G_GetPlayerViewOrigin_t)(const playerState_s *ps, float *origin);
 typedef uint64_t(*G_LocalizedStringIndex_t)(const char *text);
 typedef void(*G_LocationalTrace_t)(/*trace_t **/void *results, const float *start, const float *end, short passEntityNum, int contentmask, unsigned char *priorityMap);
 typedef uint64_t(*G_MaterialIndex_t)(const char *material);
 typedef unsigned int(*G_ModelName_t)(int index);
-typedef void(*G_SetAngle_t)(gentity_s *, const float *);
-typedef void(*G_SetModel_t)(gentity_s *, const char *);
-typedef void(*G_SetOrigin_t)(gentity_s *, const float *);
+typedef void(*G_SetAngle_t)(gentity_s *ent, const float *angle);
 typedef gentity_s *(*G_Spawn_t)();
 
 typedef void(*GScr_MapRestart_t)();
@@ -56,21 +54,21 @@ typedef Font_s *(*R_RegisterFont_t)(const char *name, int imageTrack);
 typedef int(*R_TextHeight_t)(Font_s *font);
 typedef int(*R_TextWidth_t)(const char *text, int maxChars, Font_s *font);
 
-typedef void(*Scr_AddEntity_t)(const gentity_s *);
+typedef void(*Scr_AddEntity_t)(const gentity_s *ent);
 typedef void(*Scr_AddInt_t)(int value);
 typedef void(*Scr_AddString_t)(const char *value);
 typedef void(*Scr_AddVector_t)(const float *value);
 typedef void(*Scr_MagicBullet_t)();
 typedef void(*Scr_NotifyNum_t)(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount);
 
-typedef scr_string_t(*SL_GetString_t)(const char *str, unsigned int user);
+typedef scr_string_t(*SL_GetStringOfSize_t)(const char *str, unsigned int user, unsigned int len, int type);
 
-typedef void(*SP_script_model_t)(gentity_s *);
+typedef void(*SP_script_model_t)(gentity_s *pSelf);
 
-typedef void(*SV_LinkEntity_t)(gentity_s *);
-typedef void(*SV_SendServerCommand_t)(client_t *, svscmd_type, const char *, ...);
-typedef void(*SV_SetBrushModel_t)(gentity_s *);
-typedef void(*SV_UnlinkEntity_t)(gentity_s *);
+typedef void(*SV_LinkEntity_t)(gentity_s *gEnt);
+typedef void(*SV_SendServerCommand_t)(client_t *cl, svscmd_type type, const char *fmt, ...);
+typedef void(*SV_SetBrushModel_t)(gentity_s *ent);
+typedef void(*SV_UnlinkEntity_t)(gentity_s *gEnt);
 
 typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 
@@ -78,12 +76,12 @@ typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 
 extern AngleVectors_t AngleVectors;
 
-extern Cmd_RegisterNotification_t Cmd_RegisterNotification;
 extern Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 extern DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
 extern G_DObjGetWorldTagPos_t G_DObjGetWorldTagPos;
+extern G_FindConfigstringIndex_t G_FindConfigstringIndex;
 extern G_FreeEntity_t G_FreeEntity;
 extern G_GetAngles_t G_GetAngles;
 extern G_GetOrigin_t G_GetOrigin;
@@ -93,8 +91,6 @@ extern G_LocationalTrace_t G_LocationalTrace;
 extern G_MaterialIndex_t G_MaterialIndex;
 extern G_ModelName_t G_ModelName;
 extern G_SetAngle_t G_SetAngle;
-extern G_SetModel_t G_SetModel;
-extern G_SetOrigin_t G_SetOrigin;
 extern G_Spawn_t G_Spawn;
 
 extern GScr_MapRestart_t GScr_MapRestart;
@@ -135,7 +131,7 @@ extern Scr_AddVector_t Scr_AddVector;
 extern Scr_MagicBullet_t Scr_MagicBullet;
 extern Scr_NotifyNum_t Scr_NotifyNum;
 
-extern SL_GetString_t SL_GetString;
+extern SL_GetStringOfSize_t SL_GetStringOfSize;
 
 extern SP_script_model_t SP_script_model;
 
@@ -173,8 +169,6 @@ typedef void (*CL_DrawText_t)(const unsigned int scrPlace, const char *text, int
 
 typedef void(*R_AddCmdDrawQuadPicW_t)(const float *verts, float w, const float *color, uint64_t material, uint64_t image);
 
-typedef unsigned short (*SL_GetStringOfSize_t)(const char *str, unsigned int user, unsigned int len);
-
 typedef void(*UI_DrawText_t)(const ScreenPlacement *screenPlacement, const char *text, int maxChars, uint64_t font, float x, float y, int horzAlign, int vertAlign, float scale, const float *color, int style, LocalClientNum_t localClientNum);
 typedef void(*UI_FillRectPhysical_t)(float x, float y, float w, float h, const float *color);
 
@@ -190,8 +184,6 @@ extern CL_DrawText_t CL_DrawText;
 
 extern R_AddCmdDrawQuadPicW_t R_AddCmdDrawQuadPicW;
 
-extern SL_GetStringOfSize_t SL_GetStringOfSize;
-
 extern UI_DrawText_t UI_DrawText;
 extern UI_FillRectPhysical_t UI_FillRectPhysical;
 
@@ -206,6 +198,14 @@ extern const char *Dvar_GetString(const char *dvarName);
 
 void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text);
 
+void Cmd_RegisterNotification(int clientNum, const char *commandString, const char *notifyString);
+
+int G_ModelIndex(const char *name);
+void G_SetModel(gentity_s *ent, const char *modelName);
+void G_SetOrigin(gentity_s *ent, const float *origin);
+
+int Key_GetBindingForCmd(const char *cmd);
+
 void LUI_Interface_DebugPrint(const char *fmt, ...);
 
 unsigned int Scr_GetSelf(unsigned int threadId);
@@ -213,6 +213,7 @@ void Scr_SetNumParam(int paramcount);
 
 const char *SL_ConvertToString(scr_string_t stringValue);
 const char *SL_ConvertToStringSafe(scr_string_t stringValue);
+scr_string_t SL_GetString(const char *str, unsigned int user);
 
 void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const char *text);
 

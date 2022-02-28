@@ -73,14 +73,14 @@ gentity_s *SpawnScriptModel(const char *modelName, float *origin) {
 		if (origin)
 			G_SetOrigin(entity, origin);
 
-		entity->spawnflags = 0;
+		//entity->spawnflags = 0;
 		SP_script_model(entity);
 	}
 
 	return entity;
 }
 
-void CloneBrushModelToScriptModel(gentity_s *scriptModel, gentity_s *brushModel) {
+void CloneBrushModelToScriptModel(gentity_s *scriptModel, gentity_s *brushModel) { //NOT UPDATED
 	if (!scriptModel || !brushModel)
 		return;
 
@@ -93,7 +93,7 @@ void CloneBrushModelToScriptModel(gentity_s *scriptModel, gentity_s *brushModel)
 	SV_LinkEntity(scriptModel);
 }
 
-int Solid(gentity_s *ent) {
+int Solid(gentity_s *ent) { //NOT UPDATED
 	int *scrconst = (int *)scr_const;
 	int classname = ent->classname;
 	if (classname != *(scrconst + 0x57)) { //ScriptEntCmd_Solid + 0x6C   cmp eax, [rcx+15Ch]   (0x15C / 4)
@@ -112,17 +112,17 @@ int Solid(gentity_s *ent) {
 		return 1;
 }
 
-gentity_s *FindCollision(const char *name) {
+gentity_s *FindCollision(const char *name) { //NOT UPDATED
 	for (int i = 0; i < 2048; i++) {
 		gentity_s *ent = GetEntityPtr(i);
 		// check if it is a brushmodel
 		if (*(uint8_t *)((uint8_t *)ent + 0x101) == 4) {
 			const char *targetname = SL_ConvertToString(ent->targetname);
-			//uartprintf("[MWR 1.15] FindCollision(%s) -> %i %s\n", name, i, targetname);
+			uartprintf("[MWR 1.15] FindCollision(%s) -> %i %s\n", name, i, targetname);
 			if (targetname) {
 				// see d3dbsp files for maps
 				if (!strcmp(targetname, name)) {
-					//uartprintf("[MWR 1.15] FindCollision(%s) -> 0x%llX (%i): %s\n", name, ent, i, targetname);
+					uartprintf("[MWR 1.15] FindCollision(%s) -> 0x%llX (%i): %s\n", name, ent, i, targetname);
 					return ent;
 				}
 			}

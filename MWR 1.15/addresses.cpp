@@ -5,13 +5,13 @@ NAMESPACE(Functions)
 void Init() {
 	//AngleVectors = (AngleVectors_t)0x0000000000921200;
 
-	//Cmd_RegisterNotification = (Cmd_RegisterNotification_t)0x00000000007F70C0;
 	//Cmd_TokenizeStringKernel = (Cmd_TokenizeStringKernel_t)0x00000000007F6980;
 	
 	DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x00000000009B6590;
 	
 	//G_DObjGetWorldTagPos = (G_DObjGetWorldTagPos_t)0x000000000076B250;
-	//G_FreeEntity = (G_FreeEntity_t)0x000000000076BA20;
+	G_FindConfigstringIndex = (G_FindConfigstringIndex_t)0x00000000004F8650;
+	G_FreeEntity = (G_FreeEntity_t)0x0000000000AFBBE0;
 	//G_GetAngles = (G_GetAngles_t)0x000000000076C310;
 	//G_GetPlayerViewOrigin = (G_GetPlayerViewOrigin_t)0x0000000000708BB0;
 	//G_LocalizedStringIndex = (G_LocalizedStringIndex_t)0x0000000000442410;
@@ -20,9 +20,7 @@ void Init() {
 	//G_ModelName = (G_ModelName_t)0x000000000043C510;
 	//G_SetAngle = (G_SetAngle_t)0x000000000076C230;
 	//G_GetOrigin = (G_GetOrigin_t)0x000000000076C2D0;
-	//G_SetModel = (G_SetModel_t)0x000000000076A740;
-	//G_SetOrigin = (G_SetOrigin_t)0x000000000076C0B0;
-	//G_Spawn = (G_Spawn_t)0x000000000076B810;
+	G_Spawn = (G_Spawn_t)0x0000000000AFBAB0;
 	
 	//GScr_MapRestart = (GScr_MapRestart_t)0x00000000007583E0;
 
@@ -62,11 +60,11 @@ void Init() {
 	//Scr_MagicBullet = (Scr_MagicBullet_t)0x000000000073BBB0;
 	//Scr_NotifyNum = (Scr_NotifyNum_t)0x0000000000852AE0;
 	
-	//SL_GetString = (SL_GetString_t)0x000000000084B820;
+	SL_GetStringOfSize = (SL_GetStringOfSize_t)0x0000000000BDDA80;
 	
-	//SP_script_model = (SP_script_model_t)0x0000000000760F40;
+	SP_script_model = (SP_script_model_t)0x0000000000AEBE50;
 	
-	//SV_LinkEntity = (SV_LinkEntity_t)0x00000000008B74B0;
+	SV_LinkEntity = (SV_LinkEntity_t)0x0000000000C6FF00;
 	SV_SendServerCommand = (SV_SendServerCommand_t)0x0000000000648070;
 	//SV_SetBrushModel = (SV_SetBrushModel_t)0x000000000089CFB0;
 	//SV_UnlinkEntity = (SV_UnlinkEntity_t)0x00000000008B7460;
@@ -86,8 +84,6 @@ void Init() {
 	//CL_DrawText = (CL_DrawText_t)0x00;
 
 	//R_AddCmdDrawQuadPicW = (R_AddCmdDrawQuadPicW_t)vHandler->addresses.addr_R_AddCmdDrawQuadPicW;
-
-	//SL_GetStringOfSize = (SL_GetStringOfSize_t)0x00;
 
 	//UI_DrawText = (UI_DrawText_t)vHandler->addresses.addr_UI_DrawText;
 	//UI_FillRectPhysical = (UI_FillRectPhysical_t)vHandler->addresses.addr_UI_FillRectPhysical;
