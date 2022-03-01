@@ -52,12 +52,16 @@ R_RegisterFont_t R_RegisterFont;
 R_TextHeight_t R_TextHeight;
 R_TextWidth_t R_TextWidth;
 
-Scr_AddEntity_t Scr_AddEntity;
-Scr_AddInt_t Scr_AddInt;
+RemoveRefToValue_t RemoveRefToValue;
+
+Scr_AddEntityNum_t Scr_AddEntityNum;
 Scr_AddString_t Scr_AddString;
 Scr_AddVector_t Scr_AddVector;
 Scr_MagicBullet_t Scr_MagicBullet;
-Scr_NotifyNum_t Scr_NotifyNum;
+
+ScriptEntCmd_CloneBrushModelToScriptModel_t ScriptEntCmd_CloneBrushModelToScriptModel;
+ScriptEntCmd_ScriptModelPlayAnim_t ScriptEntCmd_ScriptModelPlayAnim;
+ScriptEntCmd_Solid_t ScriptEntCmd_Solid;
 
 SL_GetStringOfSize_t SL_GetStringOfSize;
 
@@ -67,6 +71,8 @@ SV_LinkEntity_t SV_LinkEntity;
 SV_SendServerCommand_t SV_SendServerCommand;
 SV_SetBrushModel_t SV_SetBrushModel;
 SV_UnlinkEntity_t SV_UnlinkEntity;
+
+Sys_Error_t Sys_Error;
 
 Trace_GetEntityHitId_t Trace_GetEntityHitId;
 
@@ -199,6 +205,72 @@ void LUI_Interface_DebugPrint(const char *fmt, ...) { //custom
 	char buffer2[2048];
 	snprintf(buffer2, sizeof(buffer2), "[MWR 1.15] <LUI> %s", buffer);
 	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buffer2);
+}
+
+void Scr_AddConstString(scr_string_t value) { //reversed from 0x000000000064BDB6 (Scr_PlayerDamage + 0x126)
+	Scr_ClearOutParams();
+
+	uint64_t rax = *(uint64_t *)0x000000000FBC6E28;
+	int r15d = *(int *)0x000000000FBC6E34;
+	uint64_t rcx = 0x000000000FBD1370;
+
+	if (rax == rcx || rax == *(uint64_t *)0x000000000FBC6E10) {
+		Sys_Error("Internal script stack overflow");
+		return;
+	}
+
+	rcx = rax + 0x10;
+	*(uint64_t *)0x000000000FBC6E28 = rcx;
+	(*(int *)0x000000000FBC6E30)++;
+	*(int *)(rax + 0x18) = 2; //type
+	*(int *)(rax + 0x10) = value;
+
+	(*(int *)((value << 4) + *(uint64_t *)0x000000000F0A1D58))++;
+}
+
+void Scr_AddEntity(const gentity_s *ent) { //custom
+	Scr_AddEntityNum(ent->number, 0);
+}
+
+void Scr_AddInt(int value) { //NOT TESTED
+	Scr_ClearOutParams();
+
+	uint64_t rax = *(uint64_t *)0x000000000FBC6E28;
+	int r15d = *(int *)0x000000000FBC6E34;
+	uint64_t rcx = 0x000000000FBD1370;
+
+	if (rax == rcx || rax == *(uint64_t *)0x000000000FBC6E10) {
+		Sys_Error("Internal script stack overflow");
+		return;
+	}
+
+	rcx = rax + 0x10;
+	*(uint64_t *)0x000000000FBC6E28 = rcx;
+	(*(int *)0x000000000FBC6E30)++;
+	*(int *)(rax + 0x18) = 6; //type
+	*(int *)(rax + 0x10) = value;
+
+	(*(int *)((value << 4) + *(uint64_t *)0x000000000F0A1D58))++;
+}
+
+void Scr_ClearOutParams() { //reversed from 0x0000000000BE41EA (Scr_AddString + 0x0A)
+	int r15d = *(int *)0x000000000FBC6E34;
+	if (!r15d)
+		return;
+
+	uint64_t rbx = *(uint64_t *)0x000000000FBC6E28;
+	uint64_t rax = r15d << 4;
+	uint64_t rcx = rbx;
+	rbx += 8;
+	rcx -= rax;
+	*(uint64_t *)0x000000000FBC6E28 = rcx;
+	*(int *)0x000000000FBC6E34 = 0;
+
+	while (r15d != 0) {
+		RemoveRefToValue(*(int *)rbx, *(VariableUnion *)(rbx - 8));
+		rbx -= 0x10;
+		r15d--;
+	}
 }
 
 unsigned int Scr_GetSelf(unsigned int threadId) { //reversed from 0x0000000000BE2525 (Scr_CancelNotifyList + 0x25)

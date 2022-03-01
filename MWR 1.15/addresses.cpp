@@ -52,13 +52,17 @@ void Init() {
 	//R_RegisterFont = (R_RegisterFont_t)0x00000000009FB230;
 	//R_TextHeight = (R_TextHeight_t)0x00000000009FB480;
 	//R_TextWidth = (R_TextWidth_t)0x00000000009FB2E0;
+
+	RemoveRefToValue = (RemoveRefToValue_t)0x0000000000BDFEF0;
 	
-	//Scr_AddEntity = (Scr_AddEntity_t)0x00000000007662C0;
-	//Scr_AddInt = (Scr_AddInt_t)0x00000000008547E0;
-	//Scr_AddString = (Scr_AddString_t)0x0000000000854AD0;
+	Scr_AddEntityNum = (Scr_AddEntityNum_t)0x0000000000BE3F50;
+	Scr_AddString = (Scr_AddString_t)0x0000000000BE41E0;
 	//Scr_AddVector = (Scr_AddVector_t)0x0000000000854CE0;
 	//Scr_MagicBullet = (Scr_MagicBullet_t)0x000000000073BBB0;
-	//Scr_NotifyNum = (Scr_NotifyNum_t)0x0000000000852AE0;
+
+	ScriptEntCmd_CloneBrushModelToScriptModel = (ScriptEntCmd_CloneBrushModelToScriptModel_t)0x0000000000AEFE40;
+	ScriptEntCmd_ScriptModelPlayAnim = (ScriptEntCmd_ScriptModelPlayAnim_t)0x0000000000AF0090;
+	ScriptEntCmd_Solid = (ScriptEntCmd_Solid_t)0x0000000000AF06C0;
 	
 	SL_GetStringOfSize = (SL_GetStringOfSize_t)0x0000000000BDDA80;
 	
@@ -68,6 +72,8 @@ void Init() {
 	SV_SendServerCommand = (SV_SendServerCommand_t)0x0000000000648070;
 	//SV_SetBrushModel = (SV_SetBrushModel_t)0x000000000089CFB0;
 	//SV_UnlinkEntity = (SV_UnlinkEntity_t)0x00000000008B7460;
+
+	Sys_Error = (Sys_Error_t)0x000000000051B820;
 	
 	//Trace_GetEntityHitId = (Trace_GetEntityHitId_t)0x00000000007ED970;
 

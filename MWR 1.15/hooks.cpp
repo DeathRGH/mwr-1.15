@@ -19,6 +19,8 @@ LUI_CoD_Render_t LUI_CoD_Render_Stub;
 
 LUIElement_Render_t LUIElement_Render_Stub;
 
+Scr_NotifyNum_t Scr_NotifyNum_Stub;
+
 VM_Notify_t VM_Notify_Stub;
 
 void ClientThink_real_Hook(gentity_s *ent, usercmd_s *ucmd) {
@@ -104,11 +106,11 @@ void R_EndFrame_Hook() {
 	*(int *)0x000000000E35B2A4 = (*(int *)0x000000000E35B2A4 & 1) ^ 1;
 }
 
-void Scr_Notify_Hook(gentity_s *ent, scr_string_t stringValue, unsigned int paramcount) {
+void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount) {
 	if (!strcmp(SL_ConvertToString(stringValue), "weapon_fired")) {
-		//uartprintf("weapon_fired\n");
-		if (Menu::Options.host_magicBullet.state)
-			Host::FireMagicBullet(*(short *)ent, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
+		SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
+		//if (Menu::Options.host_magicBullet.state)
+			//Host::FireMagicBullet(*(short *)ent, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
 
 		//float newPos[3] = { 0.0f, 0.0f, 0.0f };
 		//Scr_AddVector(newPos);
@@ -124,9 +126,31 @@ void Scr_Notify_Hook(gentity_s *ent, scr_string_t stringValue, unsigned int para
 		//Scr_AddInt(0);
 		//Scr_SetNumParam(1);
 		//PlayerCmd_ForceMantle(*(short *)ent);
+
+		float playerPos[3];
+		playerPos[0] = Host::Entity::GetEntityPtr(entnum)->origin[0];
+		playerPos[1] = Host::Entity::GetEntityPtr(entnum)->origin[1];
+		playerPos[2] = Host::Entity::GetEntityPtr(entnum)->origin[2];
+		gentity_s *scriptModel = Host::Entity::SpawnScriptModel("rat", playerPos);//com_plasticcase_beige_big
+
+		//not working yet
+		Scr_AddConstString(0);
+		//Scr_AddInt(20);
+		Scr_AddString("animated_rat"); //h1_mp_rat_frantic_idle //frantic //animated_rat_frantic //animated_rat
+		Scr_SetNumParam(2);
+		ScriptEntCmd_ScriptModelPlayAnim(scriptModel->number);
+
+		//gentity_s *collision = Host::Entity::FindCollision("pipe_shootable");//pf1958_auto1
+		//
+		//if (collision) {
+		//	Scr_AddEntity(collision);
+		//	Scr_SetNumParam(1);
+		//	ScriptEntCmd_CloneBrushModelToScriptModel(scriptModel->number);
+		//	ScriptEntCmd_Solid(scriptModel->number);
+		//}
 	}
 
-	Scr_NotifyNum(*(short *)ent, 0, stringValue, paramcount);
+	Scr_NotifyNum_Stub(entnum, classnum, stringValue, paramcount);
 }
 
 void SV_Cmd_TokenizeString_Hook(const char *text_in) {
@@ -158,7 +182,6 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^2spawnedClientIndex: %i\"", spawnedClientIndex);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
 
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");

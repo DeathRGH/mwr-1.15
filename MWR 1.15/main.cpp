@@ -94,6 +94,10 @@ void DetectGame() {
 		//restore LUIElement_Render
 		///memcpy((void *)0x00000000004D6EC0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x81\xEC\xD8\x00\x00\x00", 20);
 		///Hooks::LUIElement_Render_Stub = (Hooks::LUIElement_Render_t)DetourFunction(0x00000000004D6EC0, (void *)Hooks::LUIElement_Render_Hook, 20);
+		
+		//restore Scr_NotifyNum
+		memcpy((void *)0x0000000000BE21D0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x83\xEC\x18", 17);
+		Hooks::Scr_NotifyNum_Stub = (Hooks::Scr_NotifyNum_t)DetourFunction(0x0000000000BE21D0, (void *)Hooks::Scr_NotifyNum_Hook, 17);
 
 		//restore VM_Notify
 		memcpy((void *)0x0000000000BE5020, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x81\xEC\xD8\x04\x00\x00", 20);
@@ -101,11 +105,10 @@ void DetectGame() {
 
 		WriteJump(0x00000000007E07E0, (uint64_t)Hooks::LUI_LuaCall_DebugPrint);
 		///WriteJump(0x0000000000A18320, (uint64_t)Hooks::R_EndFrame_Hook);
-		///WriteJump(0x0000000000766450, (uint64_t)Hooks::Scr_Notify_Hook);
 		///WriteJump(0x00000000007F6CC0, (uint64_t)Hooks::SV_Cmd_TokenizeString_Hook);
 
-		//uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_shipment.d3dbsp", 0);
-		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
+		uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_pipeline.d3dbsp", 0);
+		uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
 
 		///PrintLoadedZones();
 		///uartprintf("[MWR 1.15] %s", Host::Entity::GetModelNameFromEntity(0));

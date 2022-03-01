@@ -54,12 +54,16 @@ typedef Font_s *(*R_RegisterFont_t)(const char *name, int imageTrack);
 typedef int(*R_TextHeight_t)(Font_s *font);
 typedef int(*R_TextWidth_t)(const char *text, int maxChars, Font_s *font);
 
-typedef void(*Scr_AddEntity_t)(const gentity_s *ent);
-typedef void(*Scr_AddInt_t)(int value);
+typedef void(*RemoveRefToValue_t)(int type, VariableUnion u);
+
+typedef void(*Scr_AddEntityNum_t)(int entnum, unsigned int classnum);
 typedef void(*Scr_AddString_t)(const char *value);
 typedef void(*Scr_AddVector_t)(const float *value);
 typedef void(*Scr_MagicBullet_t)();
-typedef void(*Scr_NotifyNum_t)(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount);
+
+typedef void(*ScriptEntCmd_CloneBrushModelToScriptModel_t)(scr_entref_t entref);
+typedef void(*ScriptEntCmd_ScriptModelPlayAnim_t)(scr_entref_t entref);
+typedef void(*ScriptEntCmd_Solid_t)(scr_entref_t entref);
 
 typedef scr_string_t(*SL_GetStringOfSize_t)(const char *str, unsigned int user, unsigned int len, int type);
 
@@ -69,6 +73,8 @@ typedef void(*SV_LinkEntity_t)(gentity_s *gEnt);
 typedef void(*SV_SendServerCommand_t)(client_t *cl, svscmd_type type, const char *fmt, ...);
 typedef void(*SV_SetBrushModel_t)(gentity_s *ent);
 typedef void(*SV_UnlinkEntity_t)(gentity_s *gEnt);
+
+typedef void(*Sys_Error_t)(const char *error, ...);
 
 typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 
@@ -124,12 +130,16 @@ extern R_RegisterFont_t R_RegisterFont;
 extern R_TextHeight_t R_TextHeight;
 extern R_TextWidth_t R_TextWidth;
 
-extern Scr_AddEntity_t Scr_AddEntity;
-extern Scr_AddInt_t Scr_AddInt;
+extern RemoveRefToValue_t RemoveRefToValue;
+
+extern Scr_AddEntityNum_t Scr_AddEntityNum;
 extern Scr_AddString_t Scr_AddString;
 extern Scr_AddVector_t Scr_AddVector;
 extern Scr_MagicBullet_t Scr_MagicBullet;
-extern Scr_NotifyNum_t Scr_NotifyNum;
+
+extern ScriptEntCmd_CloneBrushModelToScriptModel_t ScriptEntCmd_CloneBrushModelToScriptModel;
+extern ScriptEntCmd_ScriptModelPlayAnim_t ScriptEntCmd_ScriptModelPlayAnim;
+extern ScriptEntCmd_Solid_t ScriptEntCmd_Solid;
 
 extern SL_GetStringOfSize_t SL_GetStringOfSize;
 
@@ -139,6 +149,8 @@ extern SV_LinkEntity_t SV_LinkEntity;
 extern SV_SendServerCommand_t SV_SendServerCommand;
 extern SV_SetBrushModel_t SV_SetBrushModel;
 extern SV_UnlinkEntity_t SV_UnlinkEntity;
+
+extern Sys_Error_t Sys_Error;
 
 extern Trace_GetEntityHitId_t Trace_GetEntityHitId;
 
@@ -208,6 +220,10 @@ int Key_GetBindingForCmd(const char *cmd);
 
 void LUI_Interface_DebugPrint(const char *fmt, ...);
 
+void Scr_AddConstString(scr_string_t value);
+void Scr_AddEntity(const gentity_s *ent);
+void Scr_AddInt(int value);
+void Scr_ClearOutParams();
 unsigned int Scr_GetSelf(unsigned int threadId);
 void Scr_SetNumParam(int paramcount);
 

@@ -41,7 +41,7 @@ enum XAssetType
 	//ASSET_TYPE_PHYSCOLLMAP = 0x01,
 	//ASSET_TYPE_PHYSWATERPRESET = 0x02,
 	//...   //0000000000668EA0 -> 2 unknown types, even in the pdb
-	//ASSET_TYPE_XANIMPARTS = 0x05,
+	ASSET_TYPE_XANIMPARTS = 0x05,
 	//ASSET_TYPE_XMODEL_SURFS = 0x06,
 	ASSET_TYPE_XMODEL = 0x07, //PlayerCmd_SetViewmodel + 0x119   mov edi, 7
 	//ASSET_TYPE_MATERIAL = 0x08,
@@ -226,7 +226,7 @@ struct UiContext {
 	//...
 };
 
-union VariableUnion { //PDB, not tested
+union VariableUnion {
 	int intValue;
 	int uintValue;
 	float floatValue;
@@ -238,7 +238,7 @@ union VariableUnion { //PDB, not tested
 	int entityOffset;
 };
 
-struct VariableValue { //PDB, not tested
+struct VariableValue {
 	VariableUnion u;
 	int type;
 };
