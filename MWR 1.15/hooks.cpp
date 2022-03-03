@@ -183,6 +183,7 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			snprintf(temp, sizeof(temp), "f \"^2spawnedClientIndex: %i\"", spawnedClientIndex);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
+			//needs check if already has the same cmd registered
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
@@ -239,12 +240,18 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 			
 			//*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
+			Host::Entity::ToggleNoclip(entityNum);
 
-			float playerPos[3];
-			playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];
-			playerPos[1] = Host::Entity::GetEntityPtr(entityNum)->origin[1];
-			playerPos[2] = Host::Entity::GetEntityPtr(entityNum)->origin[2];
-			Host::Entity::SpawnScriptModel("com_plasticcase_beige_big", playerPos);
+			if (Host::Entity::GetEntityPtr(entityNum)->client->mFlag[0] == 2)
+				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"Noclip [^2ON^7]\"");
+			else
+				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"Noclip [^1OFF^7]\"");
+
+			//float playerPos[3];
+			//playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];
+			//playerPos[1] = Host::Entity::GetEntityPtr(entityNum)->origin[1];
+			//playerPos[2] = Host::Entity::GetEntityPtr(entityNum)->origin[2];
+			//Host::Entity::SpawnScriptModel("com_plasticcase_beige_big", playerPos);
 			//should try to use the script cmd for cloning here as it at most pushes 2 ents
 
 			//gentity_s *collision = Host::Entity::FindCollision("pf1958_auto1");

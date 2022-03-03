@@ -13,8 +13,8 @@
 
 #define gentity_t 0x000000000B187AA0
 #define gentity_size 0x2E0
-#define gclient_t 0x000000000659C180 //
-#define gclient_size 0x5780 //
+#define gclient_t 0x000000000B2FA880
+#define gclient_size 0x5000
 #define lua_state (lua_State *)(*(uint64_t *)0x00000000025A6920) //
 #define UI_Context (UiContext *)0x000000000B80C540 //
 #define scr_const 0x00000000066B4500 //

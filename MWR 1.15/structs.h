@@ -71,7 +71,7 @@ enum XAssetType
 	//ASSET_TYPE_MENULIST = 0x22,
 	//ASSET_TYPE_MENU = 0x23, ///UI_DrawMapLevelshot + 0x16   mov edi, 23h
 	//ASSET_TYPE_ANIMCLASS = 0x24,
-	//ASSET_TYPE_LOCALIZE_ENTRY = 0x25, ///SEH_StringEd_GetString + 0x33   mov edi, 25h
+	ASSET_TYPE_LOCALIZE_ENTRY = 0x24,
 	//ASSET_TYPE_ATTACHMENT = 0x22,
 	//ASSET_TYPE_WEAPON = 0x23,
 	//ASSET_TYPE_SNDDRIVER_GLOBALS = 0x28, ///SND_Init + 0xC4A   mov edi, 28h
@@ -84,7 +84,7 @@ enum XAssetType
 	//ASSET_TYPE_XMODELALIAS = 0x2B,
 	//ASSET_TYPE_RAWFILE = 0x30,
 	//ASSET_TYPE_SCRIPTFILE = 0x31,
-	//ASSET_TYPE_STRINGTABLE = 0x32,
+	ASSET_TYPE_STRINGTABLE = 0x31, //SV_BotPathsInit + 0xAA   mov edi, 31h
 	ASSET_TYPE_LEADERBOARD = 0x32, //LB_OpenLeaderboardExt + 0x10   mov edi, 32h
 	//ASSET_TYPE_STRUCTURED_DATA_DEF = 0x34,
 	ASSET_TYPE_TRACER = 0x37, //ParseConfigStringToStruct + 0x8D4   mov edi, 37h
@@ -142,6 +142,9 @@ struct usercmd_s { // 0x44
 struct gclient_s {
 	//mwr:
 	//0x5C fof flag
+	//...
+	char _pad0[0x02];	//0x00
+	char mFlag[4];		//0x02
 	//...
 	int serverTime;		//0x4C //NOT UPDATED
 	//...

@@ -18,6 +18,7 @@ END
 NAMESPACE(Entity)
 
 gentity_s *GetEntityPtr(int i);
+void ToggleNoclip(int i);
 gentity_s *SpawnScriptModel(const char *modelName, float *origin);
 void CloneBrushModelToScriptModel(gentity_s *scriptModel, gentity_s *brushModel);
 int Solid(gentity_s *ent);

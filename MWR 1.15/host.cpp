@@ -64,6 +64,13 @@ gentity_s *GetEntityPtr(int i) {
 	return (gentity_s *)(gentity_t + (i * gentity_size));
 }
 
+void ToggleNoclip(int i) {
+	GetEntityPtr(i)->client->mFlag[1] = 0;
+	GetEntityPtr(i)->client->mFlag[2] = 0;
+	GetEntityPtr(i)->client->mFlag[3] = 0;
+	GetEntityPtr(i)->client->mFlag[0] ^= 2;
+}
+
 gentity_s *SpawnScriptModel(const char *modelName, float *origin) {
 	gentity_s *entity = G_Spawn();
 	if (entity) {

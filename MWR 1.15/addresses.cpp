@@ -26,7 +26,7 @@ void Init() {
 
 	hks_obj_tolstring = (hks_obj_tolstring_t)0x00000000007AE0B0;
 	
-	//HudElem_Alloc = (HudElem_Alloc_t)0x000000000071BC20;
+	HudElem_Alloc = (HudElem_Alloc_t)0x0000000000A64F60;
 	//HudElem_DestroyAll = (HudElem_DestroyAll_t)0x000000000071BE00;
 	
 	//LUI_GetRootElement = (LUI_GetRootElement_t)0x00000000004CF350;
