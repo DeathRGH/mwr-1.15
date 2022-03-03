@@ -240,12 +240,8 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 			
 			//*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
-			Host::Entity::ToggleNoclip(entityNum);
-
-			if (Host::Entity::GetEntityPtr(entityNum)->client->mFlag[0] == 2)
-				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"Noclip [^2ON^7]\"");
-			else
-				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"Noclip [^1OFF^7]\"");
+			///Host::Entity::ToggleNoclip(entityNum);
+			///SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, Host::Entity::GetEntityPtr(entityNum)->client->mFlag[0] == 2 ? "f \"Noclip [^2ON^7]\"" : "f \"Noclip [^1OFF^7]\"");
 
 			//float playerPos[3];
 			//playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];

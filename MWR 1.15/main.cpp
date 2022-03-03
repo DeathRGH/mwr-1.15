@@ -84,7 +84,7 @@ void DetectGame() {
 		//memcpy((void *)0x0000000000A34E36, "\x90\x90\x90\x90\x90\x90", 6); //patch G_SetClientContents in ClientEndFrame
 		//after this set g_client + 0x02
 
-		memcpy((void *)0x0000000000A34E2C, "\x41\x8B\x45\x02\x83\xF8\x02\x90\x90\x90", 10); //patch G_SetClientContents in ClientEndFrame
+		///memcpy((void *)0x0000000000A34E2C, "\x41\x8B\x45\x02\x83\xF8\x02\x90\x90\x90", 10); //patch G_SetClientContents in ClientEndFrame
 		//this patch works fine but crashes if loaded pre-game and you get into a match
 		// =>
 		//#
@@ -144,8 +144,8 @@ void DetectGame() {
 		//uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_pipeline.d3dbsp", 0);
 		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
 
-		uint64_t assetHeader = DB_FindXAssetHeader(XAssetType::ASSET_TYPE_STRINGTABLE, "mp/botNodePatch.csv", 0);
-		uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
+		//uint64_t assetHeader = DB_FindXAssetHeader(XAssetType::ASSET_TYPE_STRINGTABLE, "mp/botNodePatch.csv", 0);
+		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
 
 		///PrintLoadedZones();
 		///uartprintf("[MWR 1.15] %s", Host::Entity::GetModelNameFromEntity(0));
