@@ -44,8 +44,8 @@ enum XAssetType
 	ASSET_TYPE_XANIMPARTS = 0x05,
 	//ASSET_TYPE_XMODEL_SURFS = 0x06,
 	ASSET_TYPE_XMODEL = 0x07, //PlayerCmd_SetViewmodel + 0x119   mov edi, 7
-	//ASSET_TYPE_MATERIAL = 0x08,
-	//ASSET_TYPE_COMPUTESHADER = 0x09,
+	ASSET_TYPE_MATERIAL = 0x08,
+	ASSET_TYPE_COMPUTESHADER = 0x09,
 	//ASSET_TYPE_VERTEXSHADER = 0x0A,
 	//ASSET_TYPE_HULLSHADER = 0x0B,
 	//ASSET_TYPE_DOMAINSHADER = 0x0C,
@@ -123,19 +123,20 @@ struct CmdArgsPrivate {
 	//...
 };
 
-
-struct Font_s { // 0x28
-	const char *name;
-	int height;
-	int u1;
-	uintptr_t u2;
-	uintptr_t glow;
-	uintptr_t u3;
+struct Font_s { // 0x18
+	const char *name;	//0x00
+	int pixelHeight;	//0x08
+	char _pad0[0x01];	//0x0C
+	uintptr_t glow;		//0x10
 };
 
-struct usercmd_s { // 0x44
-	int time;		//0x00
-	int buttons;	//0x04
+struct FontGlowStyle {
+	//...
+};
+
+struct usercmd_s { // 0x44 AW
+	int time;		//0x00 //NOT UPDATED
+	int buttons;	//0x04 //NOT UPDATED
 	//...
 };
 
@@ -180,6 +181,10 @@ struct gentity_s { // 0x2E0
 	//...
 };
 
+struct GfxCmdDrawText2D {
+	//...
+};
+
 struct HksObject {
 	//...
 };
@@ -188,8 +193,8 @@ struct lua_State {
 	//...
 };
 
-struct Material { // 0x338
-	const char *name;
+struct Material { // 0x338 AW
+	const char *name;	//0x00 //NOT UPDATED
 	//...
 };
 
@@ -199,16 +204,16 @@ struct LUIElement {
 	uintptr_t u3;
 	uintptr_t u4;
 	int u5;
-	float width;		//0x24
-	float height;		//0x28
+	float width;		//0x24 //NOT UPDATED
+	float height;		//0x28 //NOT UPDATED
 	float u6;
-	float x1;			//0x30
-	float y1;			//0x34
-	float x2;			//0x38
-	float y2;			//0x3C
-	char _pad0[0x40];	//0x40
-	Material *material;	//0x80
-	Font_s *font;		//0x88
+	float x1;			//0x30 //NOT UPDATED
+	float y1;			//0x34 //NOT UPDATED
+	float x2;			//0x38 //NOT UPDATED
+	float y2;			//0x3C //NOT UPDATED
+	char _pad0[0x40];	//0x40 //NOT UPDATED
+	Material *material;	//0x80 //NOT UPDATED
+	Font_s *font;		//0x88 //NOT UPDATED
 	//...
 };
 
@@ -225,7 +230,14 @@ struct trace_t {
 	//...
 };
 
-struct UiContext {
+struct UiContext { //0x44F0
+	char _pad0[0x08];	//0x00
+	int time;			//0x08
+	char _pad1[0x14];	//0x0C
+	int screenWidth;	//0x20
+	int screenHeight;	//0x24
+	float aspectRatio;	//0x28
+	float fps;			//0x2C
 	//...
 };
 
@@ -307,7 +319,7 @@ enum entityType_t {
 	ET_EVENTS = 0x18 //
 };
 
-struct ScreenPlacement //size = 0x74
+struct ScreenPlacement //size = 0x74 //mwr size = 0x6C ?
 {
 	float scaleVirtualToReal[2];	//0x00
 	float scaleVirtualToFull[2];	//0x08

@@ -5,8 +5,8 @@
 
 NAMESPACE(Hooks)
 
-typedef void(*ClientThink_real_t)(gentity_s *, usercmd_s *);
-extern ClientThink_real_t ClientThink_real_Stub;
+typedef void(*CG_Draw2D_t)(LocalClientNum_t localClientNum, float *rsi, float(*rdx)[3]);
+extern CG_Draw2D_t CG_Draw2D_Stub;
 
 typedef void(*LUI_CoD_Render_t)(LocalClientNum_t, int);
 extern LUI_CoD_Render_t LUI_CoD_Render_Stub;
@@ -22,7 +22,7 @@ extern VM_Notify_t VM_Notify_Stub;
 
 //
 
-void ClientThink_real_Hook(gentity_s *ent, usercmd_s *ucmd);
+void CG_Draw2D_Hook(LocalClientNum_t localClientNum, float *rsi, float(*rdx)[3]);
 
 void LUI_CoD_Render_Hook(LocalClientNum_t rdi, int rsi);
 void LUI_LuaCall_DebugPrint(lua_State *);

@@ -60,10 +60,10 @@ void DetectGame() {
 		NewRunID();
 		Sleep(100);
 
-		///ScePthread thread1;
-		///scePthreadCreate(&thread1, NULL, (void *)RgbThread, NULL, "rgb_thread");
-		///ScePthread thread2;
-		///scePthreadCreate(&thread2, NULL, (void *)Menu::MonitorButtons, NULL, "monitorButtons_thread");
+		ScePthread thread1;
+		scePthreadCreate(&thread1, NULL, (void *)RgbThread, NULL, "rgb_thread");
+		ScePthread thread2;
+		scePthreadCreate(&thread2, NULL, (void *)Menu::MonitorButtons, NULL, "monitorButtons_thread");
 		///ScePthread thread3;
 		///scePthreadCreate(&thread3, NULL, (void *)Menu::LoopSettings, NULL, "loopSettings_thread");
 		///ScePthread thread4;
@@ -73,7 +73,7 @@ void DetectGame() {
 		sceUserServiceGetUserName(userId, userName, 20);
 
 		char welcomeMessage[100];
-		snprintf(welcomeMessage, sizeof(welcomeMessage), "Welcome %s!\n[MWR 1.15] - Loaded\n\nHold  and press .", userName);
+		snprintf(welcomeMessage, sizeof(welcomeMessage), "Welcome %s!\n[MWR 1.15] - Loaded\n\nHold  and press .", userName);
 		sceSysUtilSendSystemNotificationWithText(222, welcomeMessage);
 
 		Functions::Init();
@@ -117,9 +117,11 @@ void DetectGame() {
 		//# 0000000000000000
 		//#
 
-		//restore ClientThink_real
-		///memcpy((void *)0x0000000000704320, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x81\xE4\xE0\xFF\xFF\xFF", 20);
-		///Hooks::ClientThink_real_Stub = (Hooks::ClientThink_real_t)DetourFunction(0x0000000000704320, (void *)Hooks::ClientThink_real_Hook, 20);
+		//restore CG_Draw2D
+		memcpy((void *)0x00000000005EE8E0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x81\xEC\x38\x02\x00\x00", 20);
+		Hooks::CG_Draw2D_Stub = (Hooks::CG_Draw2D_t)DetourFunction(0x00000000005EE8E0, (void *)Hooks::CG_Draw2D_Hook, 20);
+		//possible hook 00000000007E3D50 LUIElement_Render
+		//CG_Draw2D -> LUI_CoD_RunFrame -> LUI_CoD_Render -> LUI_Render -> LUIElement_Render
 
 		//restore LUI_CoD_Render
 		///memcpy((void *)0x00000000004F01B0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x54\x53\x41\x89\xF6\x41\x89\xFF", 17);
@@ -185,3 +187,6 @@ extern "C" void _main(void) {
 
 	DetectGame();
 }
+
+//notes:
+//inlined R_AddCmdDrawText at 0x00000000008CE27C

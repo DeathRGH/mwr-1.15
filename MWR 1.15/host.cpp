@@ -155,8 +155,6 @@ const char *GetModelNameFromEntity(gentity_s *ent) {
 END
 NAMESPACE(Menu)
 
-int lastClientButton[MAX_MENU_CLIENTS];
-
 END
 NAMESPACE(Forge)
 

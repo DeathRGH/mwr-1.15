@@ -24,11 +24,11 @@ void Init() {
 
 	SetupInt(&Options.menuX, 50, 50, 1920, 0);
 	SetupInt(&Options.menuY, 50, 50, 1080, 0);
-	SetupInt(&Options.menuWidth, 520, 520, 4000, 0);
-	SetupInt(&Options.menuHeight, 655, 655, 3000, 0);
+	SetupInt(&Options.menuWidth, 700, 700, 4000, 0);
+	SetupInt(&Options.menuHeight, 725, 725, 3000, 0);
 	SetupInt(&Options.menuBorder, 0, 0, 20, 0);
-	SetupInt(&Options.menuFontIndex, 3, 3, NUM_FONTS, 0);
-	SetupFloat(&Options.menuFontSize, 0.5f, 0.5f, 2.0f, 0.01f, 0.001f);
+	SetupInt(&Options.menuFontIndex, 1, 1, NUM_FONTS, 0);
+	SetupFloat(&Options.menuFontSize, 1.0f, 1.0f, 2.0f, 0.01f, 0.001f);
 	SetupInt(&Options.menuScrollerInitialDelay, 30, 30, 500, 10);
 	SetupInt(&Options.menuScrollerDelay, 5, 5, 50, 0);
 

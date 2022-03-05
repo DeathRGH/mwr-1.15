@@ -1,10 +1,18 @@
 #pragma once
 
+#include "global.h"
 #include "host_huds.h"
 #include "structs.h"
 #include "types.h"
 
+typedef GfxCmdDrawText2D *(*AddBaseDrawTextCmd_t)(const char *text, int maxChars, Font_s *font, int fontHeight, float x, float y, float xScale, float yScale, float rotation, const float *color, int style, int cursorPos, char cursor, FontGlowStyle *glowStyle);
+
 typedef void(*AngleVectors_t)(const float *angles, float *forward, float *right, float *up);
+
+typedef void(*CG_DrawRotatedPic_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, int esi, int edx, float angle, const float *color, Material *material);
+typedef void(*CG_DrawRotatedPicPhysical_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, float angle, const float *color, Material *material);
+
+typedef void(*CL_DrawStretchPic_t)(const ScreenPlacement *screenPlacement, float x, float y, float w, float h, float s0, float t0, float s1, float t1, const float *color, Material *material);
 
 typedef void(*Cmd_TokenizeStringKernel_t)(const char *text_in, int max_tokens, CmdArgs *args, CmdArgsPrivate *argsPriv);
 
@@ -33,8 +41,6 @@ typedef void(*HudElem_DestroyAll_t)();
 typedef LUIElement *(*LUI_GetRootElement_t)(const char *, lua_State *);
 typedef void(*LUI_Interface_DrawLine_t)(LUIElement *, float x1, float y1, float x2, float y2, unsigned char, float, float r, float g, float b, float a);
 
-typedef Material *(*Material_RegisterHandle_t)(const char *name, int imageTrack);
-
 typedef void(*PlayerCmd_AllowBoostJump_t)(scr_entref_t entref);
 typedef void(*PlayerCmd_AllowDodge_t)(scr_entref_t entref);
 typedef void(*PlayerCmd_AllowHighJumpDrop_t)(scr_entref_t entref);
@@ -50,8 +56,7 @@ typedef void(*R_AddCmdDrawStretchPic_t)(float x, float y, float w, float h, floa
 typedef void(*R_AddCmdDrawText_t)(const char *text, int maxChars, Font_s *font, float x, float y, float xScale, float yScale, float rotation, const float *color, int style);
 typedef void(*R_AddCmdDrawTextWithEffects_t)(const char *text, int maxChars, Font_s *font, float x, float y, float xScale, float yScale, float rotation, const float *color, int style, const float *glowColor, Material *fxMaterial, Material *fxMaterialGlow, int fxBirthTime, int fxLetterTime, int fxDecayStartTime, int fxDecayDuration);
 typedef void *(*R_GetCommandBuffer_t)(GfxRenderCommand renderCmd, unsigned long bytes);
-typedef Font_s *(*R_RegisterFont_t)(const char *name, int imageTrack);
-typedef int(*R_TextHeight_t)(Font_s *font);
+typedef Font_s *(*R_RegisterFont_t)(const char *name, int pixelHeight, int imageTrack);
 typedef int(*R_TextWidth_t)(const char *text, int maxChars, Font_s *font);
 
 typedef void(*RemoveRefToValue_t)(int type, VariableUnion u);
@@ -80,7 +85,14 @@ typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 
 //
 
+extern AddBaseDrawTextCmd_t AddBaseDrawTextCmd;
+
 extern AngleVectors_t AngleVectors;
+
+extern CG_DrawRotatedPic_t CG_DrawRotatedPic;
+extern CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
+
+extern CL_DrawStretchPic_t CL_DrawStretchPic;
 
 extern Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
@@ -109,8 +121,6 @@ extern HudElem_DestroyAll_t HudElem_DestroyAll;
 extern LUI_GetRootElement_t LUI_GetRootElement;
 extern LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
 
-extern Material_RegisterHandle_t Material_RegisterHandle;
-
 extern PlayerCmd_AllowBoostJump_t PlayerCmd_AllowBoostJump;
 extern PlayerCmd_AllowDodge_t PlayerCmd_AllowDodge;
 extern PlayerCmd_AllowHighJumpDrop_t PlayerCmd_AllowHighJumpDrop;
@@ -127,7 +137,6 @@ extern R_AddCmdDrawText_t R_AddCmdDrawText;
 extern R_AddCmdDrawTextWithEffects_t R_AddCmdDrawTextWithEffects;
 extern R_GetCommandBuffer_t R_GetCommandBuffer;
 extern R_RegisterFont_t R_RegisterFont;
-extern R_TextHeight_t R_TextHeight;
 extern R_TextWidth_t R_TextWidth;
 
 extern RemoveRefToValue_t RemoveRefToValue;
@@ -165,17 +174,11 @@ extern Trace_GetEntityHitId_t Trace_GetEntityHitId;
 
 
 
-
-
-
-
-
 typedef void (*AimTarget_GetTagPos_t)(uint64_t ent, unsigned short tagName, float *pos);
 typedef bool (*AimTarget_IsTargetVisible_t)(LocalClientNum_t localClientNum, uint64_t targetEnt);
 
 typedef bool(*CG_CanSeeFriendlyHeadTrace_t)(int localClientNum, uint64_t cent, const float *start, const float *end);
 typedef bool (*CG_DObjGetWorldTagPos_t)(uint64_t ent, int obj, unsigned short tagName, float *pos);
-typedef void (*CG_DrawRotatedPicPhysical_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, float angle, const float *color, uint64_t material, uint64_t image);
 
 //External
 extern AimTarget_GetTagPos_t AimTarget_GetTagPos;
@@ -183,14 +186,10 @@ extern AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 
 extern CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 extern CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
-extern CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 
 //Custom
 extern void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos);
 extern bool AimTarget_IsTargetVisible_Custom(int targetEntNum, const char *visBone);
-
-extern bool Dvar_GetBool(const char *dvarName);
-extern const char *Dvar_GetString(const char *dvarName);
 
 //MWR
 
@@ -206,6 +205,10 @@ int Key_GetBindingForCmd(const char *cmd);
 
 void LUI_Interface_DebugPrint(const char *fmt, ...);
 
+Material *Material_RegisterHandle(const char *name, int imageTrack);
+
+int R_TextHeight(Font_s *font);
+
 void Scr_AddConstString(scr_string_t value);
 void Scr_AddEntity(const gentity_s *ent);
 void Scr_AddInt(int value);
@@ -219,7 +222,6 @@ scr_string_t SL_GetString(const char *str, unsigned int user);
 
 void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const char *text);
 
-#include "global.h"
 NAMESPACE(Functions)
 
 //Functions

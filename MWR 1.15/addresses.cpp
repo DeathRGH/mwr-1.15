@@ -3,7 +3,14 @@
 NAMESPACE(Functions)
 
 void Init() {
+	AddBaseDrawTextCmd = (AddBaseDrawTextCmd_t)0x0000000000DC0220;
+
 	//AngleVectors = (AngleVectors_t)0x0000000000921200;
+
+	CG_DrawRotatedPic = (CG_DrawRotatedPic_t)0x00000000008D97D0;
+	CG_DrawRotatedPicPhysical = (CG_DrawRotatedPicPhysical_t)0x00000000008D92D0;
+
+	CL_DrawStretchPic = (CL_DrawStretchPic_t)0x00000000008D92D0;
 
 	//Cmd_TokenizeStringKernel = (Cmd_TokenizeStringKernel_t)0x00000000007F6980;
 	
@@ -31,9 +38,7 @@ void Init() {
 	
 	//LUI_GetRootElement = (LUI_GetRootElement_t)0x00000000004CF350;
 	//LUI_Interface_DrawLine = (LUI_Interface_DrawLine_t)0x00000000004F2CA0;
-	
-	//Material_RegisterHandle = (Material_RegisterHandle_t)0x0000000000A058D0;
-		
+			
 	//PlayerCmd_AllowBoostJump = (PlayerCmd_AllowBoostJump_t)0x000000000070F100;
 	//PlayerCmd_AllowDodge = (PlayerCmd_AllowDodge_t)0x000000000070F180;
 	//PlayerCmd_AllowHighJumpDrop = (PlayerCmd_AllowHighJumpDrop_t)0x000000000070F280;
@@ -45,13 +50,12 @@ void Init() {
 	//PlayerCmd_SetClientDvar = (PlayerCmd_SetClientDvar_t)0x000000000070EA60;
 	//PlayerCmd_setOrigin = (PlayerCmd_setOrigin_t)0x000000000070C800;
 	
-	//R_AddCmdDrawStretchPic = (R_AddCmdDrawStretchPic_t)0x0000000000A15D10;
+	//R_AddCmdDrawStretchPic = (R_AddCmdDrawStretchPic_t)0x00000000008D92D0;
 	//R_AddCmdDrawText = (R_AddCmdDrawText_t)0x0000000000A16340;
 	//R_AddCmdDrawTextWithEffects = (R_AddCmdDrawTextWithEffects_t)0x0000000000A16480;
 	//R_GetCommandBuffer = (R_GetCommandBuffer_t)0x0000000000A15660;
-	//R_RegisterFont = (R_RegisterFont_t)0x00000000009FB230;
-	//R_TextHeight = (R_TextHeight_t)0x00000000009FB480;
-	//R_TextWidth = (R_TextWidth_t)0x00000000009FB2E0;
+	R_RegisterFont = (R_RegisterFont_t)0x0000000000D9CE40;
+	R_TextWidth = (R_TextWidth_t)0x0000000000D9CF50;
 
 	RemoveRefToValue = (RemoveRefToValue_t)0x0000000000BDFEF0;
 	
@@ -85,7 +89,6 @@ void Init() {
 
 	//CG_CanSeeFriendlyHeadTrace = (CG_CanSeeFriendlyHeadTrace_t)0x00;
 	//CG_DObjGetWorldTagPos = (CG_DObjGetWorldTagPos_t)0x00;
-	//CG_DrawRotatedPicPhysical = (CG_DrawRotatedPicPhysical_t)vHandler->addresses.addr_CG_DrawRotatedPicPhysical;
 }
 
 END

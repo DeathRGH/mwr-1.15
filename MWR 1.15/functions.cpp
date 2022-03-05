@@ -2,7 +2,14 @@
 
 #include "imports.h"
 
+AddBaseDrawTextCmd_t AddBaseDrawTextCmd;
+
 AngleVectors_t AngleVectors;
+
+CG_DrawRotatedPic_t CG_DrawRotatedPic;
+CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
+
+CL_DrawStretchPic_t CL_DrawStretchPic;
 
 Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
@@ -31,8 +38,6 @@ HudElem_DestroyAll_t HudElem_DestroyAll;
 LUI_GetRootElement_t LUI_GetRootElement;
 LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
 
-Material_RegisterHandle_t Material_RegisterHandle;
-
 PlayerCmd_AllowBoostJump_t PlayerCmd_AllowBoostJump;
 PlayerCmd_AllowDodge_t PlayerCmd_AllowDodge;
 PlayerCmd_AllowHighJumpDrop_t PlayerCmd_AllowHighJumpDrop;
@@ -49,7 +54,6 @@ R_AddCmdDrawText_t R_AddCmdDrawText;
 R_AddCmdDrawTextWithEffects_t R_AddCmdDrawTextWithEffects;
 R_GetCommandBuffer_t R_GetCommandBuffer;
 R_RegisterFont_t R_RegisterFont;
-R_TextHeight_t R_TextHeight;
 R_TextWidth_t R_TextWidth;
 
 RemoveRefToValue_t RemoveRefToValue;
@@ -92,7 +96,6 @@ AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 
 CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
-CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 
 //Custom
 void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos) {
@@ -128,18 +131,6 @@ bool AimTarget_IsTargetVisible_Custom(int targetEntNum, const char *visBone) {
 	//return trace.fraction >= 1.0f;
 }
 
-bool Dvar_GetBool(const char *dvarName) {
-	int dvar_s = 0; //Dvar_FindVar(dvarName);
-	if (dvar_s)
-		return *(bool **)(dvar_s + 0x10);
-}
-
-const char *Dvar_GetString(const char *dvarName) {
-	int dvar_s = 0; //Dvar_FindVar(dvarName);
-	if (dvar_s)
-		return *(const char **)(dvar_s + 0x10);
-}
-
 //MWR
 
 void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text) { //reversed from 0x000000000075D702 (GScr_EndLobby + 0xE2)
@@ -155,18 +146,18 @@ void Cmd_RegisterNotification(int clientNum, const char *commandString, const ch
 	if (numOfNotifications == 512)
 		return;
 
-	int bindingKey = Key_GetBindingForCmd(commandString);
+	int bindKey = Key_GetBindingForCmd(commandString);
 	scr_string_t bindString = SL_GetString(notifyString, 0);
 
 	for (int i = 0; i < numOfNotifications; i++) {
 		uint64_t commandStart = 0x0000000002DC9620 + (i * 0x0C);
-		if (*(int *)commandStart == clientNum && *(int *)(commandStart + 4) == bindingKey && *(scr_string_t *)(commandStart + 8) == bindString)
+		if (*(int *)commandStart == clientNum && *(int *)(commandStart + 4) == bindKey && *(scr_string_t *)(commandStart + 8) == bindString)
 			return;
 	}
 	
 	uint64_t newCommandStart = 0x0000000002DC9620 + (numOfNotifications * 0x0C);
 	*(int *)newCommandStart = clientNum;
-	*(int *)(newCommandStart + 0x04) = bindingKey;
+	*(int *)(newCommandStart + 0x04) = bindKey;
 	*(scr_string_t *)(newCommandStart + 0x08) = bindString;
 	*(int *)0x0000000002DC9610 = ++numOfNotifications;
 }
@@ -206,6 +197,14 @@ void LUI_Interface_DebugPrint(const char *fmt, ...) { //custom
 	char buffer2[2048];
 	snprintf(buffer2, sizeof(buffer2), "[MWR 1.15] <LUI> %s", buffer);
 	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buffer2);
+}
+
+Material *Material_RegisterHandle(const char *name, int imageTrack) {
+	return (Material *)DB_FindXAssetHeader(XAssetType::ASSET_TYPE_MATERIAL, name, 1);
+}
+
+int R_TextHeight(Font_s *font) {
+	return font->pixelHeight;
 }
 
 void Scr_AddConstString(scr_string_t value) { //reversed from 0x000000000064BDB6 (Scr_PlayerDamage + 0x126)
