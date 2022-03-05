@@ -94,13 +94,6 @@ CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
 CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 
-CL_DrawText_t CL_DrawText;
-
-R_AddCmdDrawQuadPicW_t R_AddCmdDrawQuadPicW;
-
-UI_DrawText_t UI_DrawText;
-UI_FillRectPhysical_t UI_FillRectPhysical;
-
 //Custom
 void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos) {
 	int dobj = 0;//Com_GetClientDObj(centity[entNum].nextState.number, 0);
@@ -162,10 +155,18 @@ void Cmd_RegisterNotification(int clientNum, const char *commandString, const ch
 	if (numOfNotifications == 512)
 		return;
 
+	int bindingKey = Key_GetBindingForCmd(commandString);
 	scr_string_t bindString = SL_GetString(notifyString, 0);
+
+	for (int i = 0; i < numOfNotifications; i++) {
+		uint64_t commandStart = 0x0000000002DC9620 + (i * 0x0C);
+		if (*(int *)commandStart == clientNum && *(int *)(commandStart + 4) == bindingKey && *(scr_string_t *)(commandStart + 8) == bindString)
+			return;
+	}
+	
 	uint64_t newCommandStart = 0x0000000002DC9620 + (numOfNotifications * 0x0C);
 	*(int *)newCommandStart = clientNum;
-	*(int *)(newCommandStart + 0x04) = Key_GetBindingForCmd(commandString);
+	*(int *)(newCommandStart + 0x04) = bindingKey;
 	*(scr_string_t *)(newCommandStart + 0x08) = bindString;
 	*(int *)0x0000000002DC9610 = ++numOfNotifications;
 }

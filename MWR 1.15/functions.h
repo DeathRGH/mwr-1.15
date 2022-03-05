@@ -177,13 +177,6 @@ typedef bool(*CG_CanSeeFriendlyHeadTrace_t)(int localClientNum, uint64_t cent, c
 typedef bool (*CG_DObjGetWorldTagPos_t)(uint64_t ent, int obj, unsigned short tagName, float *pos);
 typedef void (*CG_DrawRotatedPicPhysical_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, float angle, const float *color, uint64_t material, uint64_t image);
 
-typedef void (*CL_DrawText_t)(const unsigned int scrPlace, const char *text, int maxChars, int font, float x, float y, int horzAlign, int vertAlign, float xScale, float yScale, const float *color, int style);
-
-typedef void(*R_AddCmdDrawQuadPicW_t)(const float *verts, float w, const float *color, uint64_t material, uint64_t image);
-
-typedef void(*UI_DrawText_t)(const ScreenPlacement *screenPlacement, const char *text, int maxChars, uint64_t font, float x, float y, int horzAlign, int vertAlign, float scale, const float *color, int style, LocalClientNum_t localClientNum);
-typedef void(*UI_FillRectPhysical_t)(float x, float y, float w, float h, const float *color);
-
 //External
 extern AimTarget_GetTagPos_t AimTarget_GetTagPos;
 extern AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
@@ -191,13 +184,6 @@ extern AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 extern CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 extern CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
 extern CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
-
-extern CL_DrawText_t CL_DrawText;
-
-extern R_AddCmdDrawQuadPicW_t R_AddCmdDrawQuadPicW;
-
-extern UI_DrawText_t UI_DrawText;
-extern UI_FillRectPhysical_t UI_FillRectPhysical;
 
 //Custom
 extern void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos);

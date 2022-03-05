@@ -86,13 +86,6 @@ void Init() {
 	//CG_CanSeeFriendlyHeadTrace = (CG_CanSeeFriendlyHeadTrace_t)0x00;
 	//CG_DObjGetWorldTagPos = (CG_DObjGetWorldTagPos_t)0x00;
 	//CG_DrawRotatedPicPhysical = (CG_DrawRotatedPicPhysical_t)vHandler->addresses.addr_CG_DrawRotatedPicPhysical;
-
-	//CL_DrawText = (CL_DrawText_t)0x00;
-
-	//R_AddCmdDrawQuadPicW = (R_AddCmdDrawQuadPicW_t)vHandler->addresses.addr_R_AddCmdDrawQuadPicW;
-
-	//UI_DrawText = (UI_DrawText_t)vHandler->addresses.addr_UI_DrawText;
-	//UI_FillRectPhysical = (UI_FillRectPhysical_t)vHandler->addresses.addr_UI_FillRectPhysical;
 }
 
 END
