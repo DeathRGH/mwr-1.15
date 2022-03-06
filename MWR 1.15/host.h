@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global.h"
+#include "host_huds.h"
 #include "structs.h"
 
 NAMESPACE(Host)
@@ -31,6 +32,16 @@ END
 NAMESPACE(Menu)
 
 #define MAX_MENU_CLIENTS 18
+
+extern bool menuOpen[MAX_MENU_CLIENTS];
+
+extern struct game_hudelem_s *background[MAX_MENU_CLIENTS];
+extern struct game_hudelem_s *header[MAX_MENU_CLIENTS];
+extern struct game_hudelem_s *options[MAX_MENU_CLIENTS][10];
+
+void OnPlayerSpawned(int i);
+void OnPlayerDeath(int i);
+void OpenCloseMenu(int i);
 
 END
 NAMESPACE(Forge)

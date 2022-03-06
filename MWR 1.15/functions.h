@@ -194,6 +194,7 @@ void G_SetModel(gentity_s *ent, const char *modelName);
 void G_SetOrigin(gentity_s *ent, const float *origin);
 
 void HudElem_DestroyAll();
+void HudElem_DestroyClient(int clientIndex);
 
 int Key_GetBindingForCmd(const char *cmd);
 

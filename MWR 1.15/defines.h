@@ -18,6 +18,7 @@
 #define lua_state (lua_State *)(*(uint64_t *)0x00000000025A6920) //
 #define UI_Context (UiContext *)0x0000000002DDC160
 #define scr_const 0x00000000066B4500 //
+#define Leveltime *(int *)(0x000000000B0FE8B0 + 0x524) //level_locals_t + 0x524
 
 #define SV_CMD_R2_DOWN			"n 1"
 #define SV_CMD_R2_UP			"n 2"

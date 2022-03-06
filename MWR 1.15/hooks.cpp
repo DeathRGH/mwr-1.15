@@ -168,20 +168,15 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 		const char *notifyString = SL_ConvertToString(stringValue);
 		int entityNum = Scr_GetSelf(notifyListOwnerId);
 
-		//char temp[100];
-		//snprintf(temp, sizeof(temp), "f \"%s\"", notifyString);
-		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);	
-
 		if (!strcmp(notifyString, "player_spawned")) {
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"player_spawned\"");
-
 			int spawnedClientIndex = Scr_GetSelf(top->u.entityOffset);
 
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^2spawnedClientIndex: %i\"", spawnedClientIndex);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
-			//needs check if already has the same cmd registered
+			SV_GameSendServerCommand(spawnedClientIndex, svscmd_type::SV_CMD_RELIABLE, "f \"Press \x0017 ^7to ^2open ^7the menu.\"");
+
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
@@ -190,8 +185,19 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
-			//ClientInfo[spawnedClientIndex].IsAlive = true;
-			//EnableMenu(spawnedClientIndex, host);
+
+			Host::Menu::OnPlayerSpawned(spawnedClientIndex);
+		}
+		if (!strcmp(notifyString, "death")) {
+			int diedClientIndex = Scr_GetSelf(top->u.entityOffset);
+
+			if (diedClientIndex == entityNum) {
+				char temp[100];
+				snprintf(temp, sizeof(temp), "f \"^1diedClientIndex: %i, ent: %i\"", diedClientIndex, entityNum);
+				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+
+				Host::Menu::OnPlayerDeath(diedClientIndex);
+			}
 		}
 		if (!strcmp(notifyString, "DPAD_UP")) {
 			char temp[100];
@@ -224,6 +230,8 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_RIGHT\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+
+			Host::Menu::OpenCloseMenu(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				G_FreeEntity(Host::Forge::clientCurrentEntity[entityNum]);

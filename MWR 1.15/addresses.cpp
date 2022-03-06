@@ -25,7 +25,7 @@ void Init() {
 	//G_GetOrigin = (G_GetOrigin_t)0x000000000076C2D0;
 	G_Spawn = (G_Spawn_t)0x0000000000AFBAB0;
 	
-	//GScr_MapRestart = (GScr_MapRestart_t)0x00000000007583E0;
+	GScr_MapRestart = (GScr_MapRestart_t)0x0000000000757FA0;
 
 	hks_obj_tolstring = (hks_obj_tolstring_t)0x00000000007AE0B0;
 	

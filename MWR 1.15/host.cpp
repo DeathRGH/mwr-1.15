@@ -155,6 +155,41 @@ const char *GetModelNameFromEntity(gentity_s *ent) {
 END
 NAMESPACE(Menu)
 
+bool menuOpen[MAX_MENU_CLIENTS];
+
+game_hudelem_s *background[MAX_MENU_CLIENTS];
+game_hudelem_s *header[MAX_MENU_CLIENTS];
+game_hudelem_s *options[MAX_MENU_CLIENTS][10];
+
+void OnPlayerSpawned(int i) {
+	background[i] = PrecacheElem(0);
+	header[i] = PrecacheElem(0);
+
+	Hud(background[i]).SetShader("white", 200, 300, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
+	Hud(header[i]).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
+}
+
+void OnPlayerDeath(int i) {
+	menuOpen[i] = false;
+	HudElem_DestroyClient(i);
+}
+
+void OpenCloseMenu(int i) {
+	if (!background[i] || !header[i])
+		return;
+
+	if (menuOpen[i]) {
+		Hud(background[i]).MoveOverTime(250, 1000.0f, 200.0f);
+		Hud(header[i]).MoveOverTime(250, 1000.0f, 70.0f);
+	}
+	else {
+		Hud(background[i]).MoveOverTime(250, 600.0f, 200.0f);
+		Hud(header[i]).MoveOverTime(250, 600.0f, 70.0f);
+	}
+
+	menuOpen[i] = !menuOpen[i];
+}
+
 END
 NAMESPACE(Forge)
 
