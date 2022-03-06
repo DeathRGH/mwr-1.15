@@ -161,6 +161,14 @@ void DetectGame() {
 		Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 90");
 		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "c \"^2Dizz ^7is bae ^1<3\"");
 		//uartprintf("[MWR 1.15] SL_ConvertToString: %s\n", SL_ConvertToString((scr_string_t)0x16)); //(0x168 - 8) >> 4 = 0x16
+
+		HudElem_DestroyAll();
+
+		game_hudelem_s *elem = HudElem_Alloc(0, 0);
+		uartprintf("[MWR 1.15] HudElem_Alloc(0, 0); -> 0x%llX\n", elem);
+
+		int materialIndex = G_MaterialIndex("white");
+		uartprintf("[MWR 1.15] G_MaterialIndex(\"white\"); -> 0x%llX\n", materialIndex);
 	}
 	else {
 		sceSysUtilSendSystemNotificationWithText(222, "Welcome to MWR 1.15");
@@ -189,4 +197,6 @@ extern "C" void _main(void) {
 }
 
 //notes:
-//inlined R_AddCmdDrawText at 0x00000000008CE27C
+//maps d3dbsp at 0x000000000B0FE848 most be something like inside level_locals_t
+
+//0x000000000B0FE8B0 + 0x2C (level_locals_t) set compass objective (0x14 = lines)

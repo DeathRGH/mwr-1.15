@@ -10,8 +10,6 @@ void Init() {
 	CG_DrawRotatedPic = (CG_DrawRotatedPic_t)0x00000000008D97D0;
 	CG_DrawRotatedPicPhysical = (CG_DrawRotatedPicPhysical_t)0x00000000008D92D0;
 
-	CL_DrawStretchPic = (CL_DrawStretchPic_t)0x00000000008D92D0;
-
 	//Cmd_TokenizeStringKernel = (Cmd_TokenizeStringKernel_t)0x00000000007F6980;
 	
 	DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x00000000009B6590;
@@ -21,9 +19,7 @@ void Init() {
 	G_FreeEntity = (G_FreeEntity_t)0x0000000000AFBBE0;
 	//G_GetAngles = (G_GetAngles_t)0x000000000076C310;
 	//G_GetPlayerViewOrigin = (G_GetPlayerViewOrigin_t)0x0000000000708BB0;
-	//G_LocalizedStringIndex = (G_LocalizedStringIndex_t)0x0000000000442410;
 	//G_LocationalTrace = (G_LocationalTrace_t)0x0000000000726550;
-	//G_MaterialIndex = (G_MaterialIndex_t)0x000000000043C4A0;
 	//G_ModelName = (G_ModelName_t)0x000000000043C510;
 	//G_SetAngle = (G_SetAngle_t)0x000000000076C230;
 	//G_GetOrigin = (G_GetOrigin_t)0x000000000076C2D0;
@@ -34,7 +30,6 @@ void Init() {
 	hks_obj_tolstring = (hks_obj_tolstring_t)0x00000000007AE0B0;
 	
 	HudElem_Alloc = (HudElem_Alloc_t)0x0000000000A64F60;
-	//HudElem_DestroyAll = (HudElem_DestroyAll_t)0x000000000071BE00;
 	
 	//LUI_GetRootElement = (LUI_GetRootElement_t)0x00000000004CF350;
 	//LUI_Interface_DrawLine = (LUI_Interface_DrawLine_t)0x00000000004F2CA0;

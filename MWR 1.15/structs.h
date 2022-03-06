@@ -16,6 +16,17 @@ enum GfxRenderCommand {
 	//...
 };
 
+enum he_type_t {
+	HE_TYPE_FREE = 0x00,
+	HE_TYPE_TEXT = 0x01,
+	HE_TYPE_VALUE = 0x02,
+	HE_TYPE_PLAYERNAME = 0x03,
+	HE_TYPE_MATERIAL = 0x04,
+	HE_TYPE_TIMER_UP = 0x06,
+	HE_TYPE_TENTHS_TIMER_UP = 0x09
+};
+
+
 enum LocalClientNum_t : int {
 	INVALID_LOCAL_CLIENT = -1,
 	LOCAL_CLIENT_0 = 0,
@@ -88,7 +99,7 @@ enum XAssetType
 	ASSET_TYPE_LEADERBOARD = 0x32, //LB_OpenLeaderboardExt + 0x10   mov edi, 32h
 	//ASSET_TYPE_STRUCTURED_DATA_DEF = 0x34,
 	ASSET_TYPE_TRACER = 0x37, //ParseConfigStringToStruct + 0x8D4   mov edi, 37h
-	//ASSET_TYPE_VEHICLE = 0x36,
+	ASSET_TYPE_VEHICLE = 0x38, //Vehicle_LoadServerDefAssets + 0x21   mov edi, 38h
 	//ASSET_TYPE_ADDON_MAP_ENTS = 0x33,
 	//ASSET_TYPE_NET_CONST_STRINGS = 0x34,
 	//ASSET_TYPE_REVERB_PRESET = 0x39, ///LoadReverbPreset + 0x13   mov edi, 39h

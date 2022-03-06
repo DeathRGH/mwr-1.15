@@ -12,8 +12,6 @@ typedef void(*AngleVectors_t)(const float *angles, float *forward, float *right,
 typedef void(*CG_DrawRotatedPic_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, int esi, int edx, float angle, const float *color, Material *material);
 typedef void(*CG_DrawRotatedPicPhysical_t)(const ScreenPlacement *screenPlacement, float x, float y, float width, float height, float angle, const float *color, Material *material);
 
-typedef void(*CL_DrawStretchPic_t)(const ScreenPlacement *screenPlacement, float x, float y, float w, float h, float s0, float t0, float s1, float t1, const float *color, Material *material);
-
 typedef void(*Cmd_TokenizeStringKernel_t)(const char *text_in, int max_tokens, CmdArgs *args, CmdArgsPrivate *argsPriv);
 
 typedef uint64_t(*DB_FindXAssetHeader_t)(XAssetType type, const char *name, int allowCreateDefault);
@@ -24,9 +22,7 @@ typedef void(*G_FreeEntity_t)(gentity_s *ed);
 typedef void(*G_GetAngles_t)(LocalClientNum_t localClientNum, short entIndex, float *outAngles);
 typedef void(*G_GetOrigin_t)(LocalClientNum_t localClientNum, short entIndex, float *outPosition);
 typedef void(*G_GetPlayerViewOrigin_t)(const playerState_s *ps, float *origin);
-typedef uint64_t(*G_LocalizedStringIndex_t)(const char *text);
 typedef void(*G_LocationalTrace_t)(/*trace_t **/void *results, const float *start, const float *end, short passEntityNum, int contentmask, unsigned char *priorityMap);
-typedef uint64_t(*G_MaterialIndex_t)(const char *material);
 typedef unsigned int(*G_ModelName_t)(int index);
 typedef void(*G_SetAngle_t)(gentity_s *ent, const float *angle);
 typedef gentity_s *(*G_Spawn_t)();
@@ -35,8 +31,7 @@ typedef void(*GScr_MapRestart_t)();
 
 typedef const char *(*hks_obj_tolstring_t)(lua_State *, HksObject *, unsigned long *);
 
-typedef game_hudelem_t(*HudElem_Alloc_t)(int clientNum, int teamNum);
-typedef void(*HudElem_DestroyAll_t)();
+typedef game_hudelem_s *(*HudElem_Alloc_t)(int clientNum, int teamNum);
 
 typedef LUIElement *(*LUI_GetRootElement_t)(const char *, lua_State *);
 typedef void(*LUI_Interface_DrawLine_t)(LUIElement *, float x1, float y1, float x2, float y2, unsigned char, float, float r, float g, float b, float a);
@@ -92,8 +87,6 @@ extern AngleVectors_t AngleVectors;
 extern CG_DrawRotatedPic_t CG_DrawRotatedPic;
 extern CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 
-extern CL_DrawStretchPic_t CL_DrawStretchPic;
-
 extern Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 extern DB_FindXAssetHeader_t DB_FindXAssetHeader;
@@ -104,9 +97,7 @@ extern G_FreeEntity_t G_FreeEntity;
 extern G_GetAngles_t G_GetAngles;
 extern G_GetOrigin_t G_GetOrigin;
 extern G_GetPlayerViewOrigin_t G_GetPlayerViewOrigin;
-extern G_LocalizedStringIndex_t G_LocalizedStringIndex;
 extern G_LocationalTrace_t G_LocationalTrace;
-extern G_MaterialIndex_t G_MaterialIndex;
 extern G_ModelName_t G_ModelName;
 extern G_SetAngle_t G_SetAngle;
 extern G_Spawn_t G_Spawn;
@@ -116,7 +107,6 @@ extern GScr_MapRestart_t GScr_MapRestart;
 extern hks_obj_tolstring_t hks_obj_tolstring;
 
 extern HudElem_Alloc_t HudElem_Alloc;
-extern HudElem_DestroyAll_t HudElem_DestroyAll;
 
 extern LUI_GetRootElement_t LUI_GetRootElement;
 extern LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
@@ -197,9 +187,13 @@ void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text);
 
 void Cmd_RegisterNotification(int clientNum, const char *commandString, const char *notifyString);
 
+int G_LocalizedStringIndex(const char *string);
+int G_MaterialIndex(const char *name);
 int G_ModelIndex(const char *name);
 void G_SetModel(gentity_s *ent, const char *modelName);
 void G_SetOrigin(gentity_s *ent, const float *origin);
+
+void HudElem_DestroyAll();
 
 int Key_GetBindingForCmd(const char *cmd);
 

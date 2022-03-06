@@ -1,4 +1,5 @@
 #include "host_huds.h"
+
 #include "functions.h"
 
 Hud::Hud(game_hudelem_s *elem) {
@@ -12,7 +13,7 @@ game_hudelem_s *PrecacheElem(int clientId) {
 }
 
 void Hud::SetShader(const char *shader, int width, int height, float x, float y, int alignOrg, int alignScreen, float sort, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-    element->elem.type = 0x04;
+    element->elem.type = he_type_t::HE_TYPE_MATERIAL;
     element->elem.alignOrg = alignOrg;
     element->elem.alignScreen = alignScreen;
     element->elem.x = x;
@@ -28,7 +29,7 @@ void Hud::SetShader(const char *shader, int width, int height, float x, float y,
 }
 
 void Hud::SetText(const char *text, int font, float fontScale, float x, float y, int alignOrg, int alignScreen, float sort, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned char glowR, unsigned char glowG, unsigned char glowB, unsigned char glowA) {
-    element->elem.type = 0x01;
+    element->elem.type = he_type_t::HE_TYPE_TEXT;
     element->elem.font = font;
     element->elem.fontScale = fontScale;
     element->elem.alignOrg = alignOrg;
