@@ -8,11 +8,11 @@ typedef unsigned short scr_string_t;
 
 //
 
-enum ConfigString {
+enum GfxRenderCommand {
 	//...
 };
 
-enum GfxRenderCommand {
+enum ConfigString {
 	//...
 };
 
@@ -22,8 +22,11 @@ enum he_type_t {
 	HE_TYPE_VALUE = 0x02,
 	HE_TYPE_PLAYERNAME = 0x03,
 	HE_TYPE_MATERIAL = 0x04,
+	//...
 	HE_TYPE_TIMER_UP = 0x06,
+	//...
 	HE_TYPE_TENTHS_TIMER_UP = 0x09
+	//...
 };
 
 
