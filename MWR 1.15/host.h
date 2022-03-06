@@ -6,6 +6,11 @@
 
 NAMESPACE(Host)
 
+void AddFriendlyBot();
+void RemoveFriendlyBot();
+void AddEnemyBot();
+void RemoveEnemyBot();
+
 void FireMagicBullet(short entNum, const char *projectile);
 
 int BulletTrace(float *start, float *end, unsigned short *entityId);

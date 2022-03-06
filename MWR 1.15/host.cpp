@@ -7,6 +7,26 @@
 
 NAMESPACE(Host)
 
+void AddFriendlyBot() {
+	if ((*(char *)(0x00000000148BAAF0 + 0x0F) + *(char *)(0x00000000148BAAF0 + 0x10)) < 17)
+		(*(char *)(0x00000000148BAAF0 + 0x0F))++;
+}
+
+void RemoveFriendlyBot() {
+	if (*(char *)(0x00000000148BAAF0 + 0x0F) > 0)
+		(*(char *)(0x00000000148BAAF0 + 0x0F))--;
+}
+
+void AddEnemyBot() {
+	if((*(char *)(0x00000000148BAAF0 + 0x0F) + *(char *)(0x00000000148BAAF0 + 0x10)) < 17)
+		(*(char *)(0x00000000148BAAF0 + 0x10))++;
+}
+
+void RemoveEnemyBot() {
+	if (*(char *)(0x00000000148BAAF0 + 0x10) > 0)
+		(*(char *)(0x00000000148BAAF0 + 0x10))--;
+}
+
 void FireMagicBullet(short entNum, const char *projectile) {
 	float playerAngles[3];
 	playerAngles[0] = *(float *)((entNum * 0x5780) + 0x000000000659C180 + 0x1B4);
