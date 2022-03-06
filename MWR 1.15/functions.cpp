@@ -2,7 +2,12 @@
 
 #include "imports.h"
 
+AddBaseDrawTextCmd_t AddBaseDrawTextCmd;
+
 AngleVectors_t AngleVectors;
+
+CG_DrawRotatedPic_t CG_DrawRotatedPic;
+CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
 
 Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
@@ -14,9 +19,7 @@ G_FreeEntity_t G_FreeEntity;
 G_GetAngles_t G_GetAngles;
 G_GetOrigin_t G_GetOrigin;
 G_GetPlayerViewOrigin_t G_GetPlayerViewOrigin;
-G_LocalizedStringIndex_t G_LocalizedStringIndex;
 G_LocationalTrace_t G_LocationalTrace;
-G_MaterialIndex_t G_MaterialIndex;
 G_ModelName_t G_ModelName;
 G_SetAngle_t G_SetAngle;
 G_Spawn_t G_Spawn;
@@ -26,12 +29,9 @@ GScr_MapRestart_t GScr_MapRestart;
 hks_obj_tolstring_t hks_obj_tolstring;
 
 HudElem_Alloc_t HudElem_Alloc;
-HudElem_DestroyAll_t HudElem_DestroyAll;
 
 LUI_GetRootElement_t LUI_GetRootElement;
 LUI_Interface_DrawLine_t LUI_Interface_DrawLine;
-
-Material_RegisterHandle_t Material_RegisterHandle;
 
 PlayerCmd_AllowBoostJump_t PlayerCmd_AllowBoostJump;
 PlayerCmd_AllowDodge_t PlayerCmd_AllowDodge;
@@ -49,7 +49,6 @@ R_AddCmdDrawText_t R_AddCmdDrawText;
 R_AddCmdDrawTextWithEffects_t R_AddCmdDrawTextWithEffects;
 R_GetCommandBuffer_t R_GetCommandBuffer;
 R_RegisterFont_t R_RegisterFont;
-R_TextHeight_t R_TextHeight;
 R_TextWidth_t R_TextWidth;
 
 RemoveRefToValue_t RemoveRefToValue;
@@ -92,14 +91,6 @@ AimTarget_IsTargetVisible_t AimTarget_IsTargetVisible;
 
 CG_CanSeeFriendlyHeadTrace_t CG_CanSeeFriendlyHeadTrace;
 CG_DObjGetWorldTagPos_t CG_DObjGetWorldTagPos;
-CG_DrawRotatedPicPhysical_t CG_DrawRotatedPicPhysical;
-
-CL_DrawText_t CL_DrawText;
-
-R_AddCmdDrawQuadPicW_t R_AddCmdDrawQuadPicW;
-
-UI_DrawText_t UI_DrawText;
-UI_FillRectPhysical_t UI_FillRectPhysical;
 
 //Custom
 void AimTarget_GetTagPos_Custom(int entNum, const char *tagName, float *pos) {
@@ -135,18 +126,6 @@ bool AimTarget_IsTargetVisible_Custom(int targetEntNum, const char *visBone) {
 	//return trace.fraction >= 1.0f;
 }
 
-bool Dvar_GetBool(const char *dvarName) {
-	int dvar_s = 0; //Dvar_FindVar(dvarName);
-	if (dvar_s)
-		return *(bool **)(dvar_s + 0x10);
-}
-
-const char *Dvar_GetString(const char *dvarName) {
-	int dvar_s = 0; //Dvar_FindVar(dvarName);
-	if (dvar_s)
-		return *(const char **)(dvar_s + 0x10);
-}
-
 //MWR
 
 void Cbuf_AddText(LocalClientNum_t localClientNum, const char *text) { //reversed from 0x000000000075D702 (GScr_EndLobby + 0xE2)
@@ -162,12 +141,28 @@ void Cmd_RegisterNotification(int clientNum, const char *commandString, const ch
 	if (numOfNotifications == 512)
 		return;
 
+	int bindKey = Key_GetBindingForCmd(commandString);
 	scr_string_t bindString = SL_GetString(notifyString, 0);
+
+	for (int i = 0; i < numOfNotifications; i++) {
+		uint64_t commandStart = 0x0000000002DC9620 + (i * 0x0C);
+		if (*(int *)commandStart == clientNum && *(int *)(commandStart + 4) == bindKey && *(scr_string_t *)(commandStart + 8) == bindString)
+			return;
+	}
+	
 	uint64_t newCommandStart = 0x0000000002DC9620 + (numOfNotifications * 0x0C);
 	*(int *)newCommandStart = clientNum;
-	*(int *)(newCommandStart + 0x04) = Key_GetBindingForCmd(commandString);
+	*(int *)(newCommandStart + 0x04) = bindKey;
 	*(scr_string_t *)(newCommandStart + 0x08) = bindString;
 	*(int *)0x0000000002DC9610 = ++numOfNotifications;
+}
+
+int G_LocalizedStringIndex(const char *string) { //reversed from 0x0000000000A66DA0 (HECmd_SetText + 0x90)
+	return G_FindConfigstringIndex(string, (ConfigString)0x21D, 0x28A, 0, "localized string");
+}
+
+int G_MaterialIndex(const char *name) { //reversed from 0x0000000000AF322A
+	return G_FindConfigstringIndex(name, (ConfigString)0xD9A, 0x1A0, 0, "material");
 }
 
 int G_ModelIndex(const char *name) { //reversed from 0x0000000000A45DCD (PlayerCmd_SetViewmodel + 0xCD)
@@ -183,6 +178,15 @@ void G_SetOrigin(gentity_s *ent, const float *origin) { //custom
 	ent->origin[0] = origin[0];
 	ent->origin[1] = origin[1];
 	ent->origin[2] = origin[2];
+}
+
+void HudElem_DestroyAll() { //custom
+	int offset = 0;
+
+	while (offset < 0x30000) {
+		*(int *)(0x000000000B0BC840/*g_hudelems*/ + offset + 0x1C) = he_type_t::HE_TYPE_FREE;
+		offset += 0xD0;
+	}
 }
 
 int Key_GetBindingForCmd(const char *cmd) { //reversed from 0x0000000000A4E0E6 (GScr_notifyOnPlayerCommand + 0xB6)
@@ -205,6 +209,14 @@ void LUI_Interface_DebugPrint(const char *fmt, ...) { //custom
 	char buffer2[2048];
 	snprintf(buffer2, sizeof(buffer2), "[MWR 1.15] <LUI> %s", buffer);
 	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buffer2);
+}
+
+Material *Material_RegisterHandle(const char *name, int imageTrack) { //custom
+	return (Material *)DB_FindXAssetHeader(XAssetType::ASSET_TYPE_MATERIAL, name, 1);
+}
+
+int R_TextHeight(Font_s *font) { //custom
+	return font->pixelHeight;
 }
 
 void Scr_AddConstString(scr_string_t value) { //reversed from 0x000000000064BDB6 (Scr_PlayerDamage + 0x126)

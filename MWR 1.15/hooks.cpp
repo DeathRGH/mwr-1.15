@@ -13,7 +13,7 @@
 
 NAMESPACE(Hooks)
 
-ClientThink_real_t ClientThink_real_Stub;
+CG_Draw2D_t CG_Draw2D_Stub;
 
 LUI_CoD_Render_t LUI_CoD_Render_Stub;
 
@@ -23,15 +23,13 @@ Scr_NotifyNum_t Scr_NotifyNum_Stub;
 
 VM_Notify_t VM_Notify_Stub;
 
-void ClientThink_real_Hook(gentity_s *ent, usercmd_s *ucmd) {
-	ClientThink_real_Stub(ent, ucmd);
+void CG_Draw2D_Hook(LocalClientNum_t localClientNum, float *rsi, float(*rdx)[3]) {
+	CG_Draw2D_Stub(localClientNum, rsi, rdx);
 
-	if (Host::Menu::lastClientButton[ent->number] == ucmd->buttons)
-		return;
+	Menu::DrawMenu();
 
-	Host::Menu::lastClientButton[ent->number] = ucmd->buttons;
-
-	//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "c Test");
+	//DrawShader(1000.0f, 500.0f, 200.0f, 400.0f, black08);
+	//DrawText("MWR 1.15 Test Text DeathRGH", 1000.0f, 500.0f, 1.0f, white10);
 }
 
 typedef void(*LUI_Interface_DrawRectangle_t)(LUIElement *, float x, float y, float width, float height, float, float, float, float, float, float, float, Material *, float *, LUI_QuadRenderMode, bool, lua_State *);
@@ -127,18 +125,18 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//Scr_SetNumParam(1);
 		//PlayerCmd_ForceMantle(*(short *)ent);
 
-		float playerPos[3];
-		playerPos[0] = Host::Entity::GetEntityPtr(entnum)->origin[0];
-		playerPos[1] = Host::Entity::GetEntityPtr(entnum)->origin[1];
-		playerPos[2] = Host::Entity::GetEntityPtr(entnum)->origin[2];
-		gentity_s *scriptModel = Host::Entity::SpawnScriptModel("rat", playerPos);//com_plasticcase_beige_big
+		//float playerPos[3];
+		//playerPos[0] = Host::Entity::GetEntityPtr(entnum)->origin[0];
+		//playerPos[1] = Host::Entity::GetEntityPtr(entnum)->origin[1];
+		//playerPos[2] = Host::Entity::GetEntityPtr(entnum)->origin[2];
+		//gentity_s *scriptModel = Host::Entity::SpawnScriptModel("rat", playerPos);//com_plasticcase_beige_big
 
 		//not working yet
-		Scr_AddConstString(0);
+		//Scr_AddConstString(0);
 		//Scr_AddInt(20);
-		Scr_AddString("animated_rat"); //h1_mp_rat_frantic_idle //frantic //animated_rat_frantic //animated_rat
-		Scr_SetNumParam(2);
-		ScriptEntCmd_ScriptModelPlayAnim(scriptModel->number);
+		//Scr_AddString("animated_rat"); //h1_mp_rat_frantic_idle //frantic //animated_rat_frantic //animated_rat
+		//Scr_SetNumParam(2);
+		//ScriptEntCmd_ScriptModelPlayAnim(scriptModel->number);
 
 		//gentity_s *collision = Host::Entity::FindCollision("pipe_shootable");//pf1958_auto1
 		//
@@ -183,6 +181,7 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			snprintf(temp, sizeof(temp), "f \"^2spawnedClientIndex: %i\"", spawnedClientIndex);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
+			//needs check if already has the same cmd registered
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
@@ -239,12 +238,14 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 			
 			//*(char *)(gclient_t + 0x5370 + (entityNum * gclient_size)) ^= 1;
+			///Host::Entity::ToggleNoclip(entityNum);
+			///SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, Host::Entity::GetEntityPtr(entityNum)->client->mFlag[0] == 2 ? "f \"Noclip [^2ON^7]\"" : "f \"Noclip [^1OFF^7]\"");
 
-			float playerPos[3];
-			playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];
-			playerPos[1] = Host::Entity::GetEntityPtr(entityNum)->origin[1];
-			playerPos[2] = Host::Entity::GetEntityPtr(entityNum)->origin[2];
-			Host::Entity::SpawnScriptModel("com_plasticcase_beige_big", playerPos);
+			//float playerPos[3];
+			//playerPos[0] = Host::Entity::GetEntityPtr(entityNum)->origin[0];
+			//playerPos[1] = Host::Entity::GetEntityPtr(entityNum)->origin[1];
+			//playerPos[2] = Host::Entity::GetEntityPtr(entityNum)->origin[2];
+			//Host::Entity::SpawnScriptModel("com_plasticcase_beige_big", playerPos);
 			//should try to use the script cmd for cloning here as it at most pushes 2 ents
 
 			//gentity_s *collision = Host::Entity::FindCollision("pf1958_auto1");

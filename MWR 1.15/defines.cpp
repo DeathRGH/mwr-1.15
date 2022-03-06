@@ -8,40 +8,24 @@
 
 const char *FontForIndex(int index) {
 	if (index == 0)
-		return "fonts/smalldevfont";
+		return "fonts/default.otf";
 	if (index == 1)
-		return "fonts/bigDevFont";
+		return "fonts/defaultBold.otf";
 	if (index == 2)
-		return "fonts/consoleFont";
-	if (index == 3)
-		return "fonts/bodyFont";
-	if (index == 4)
-		return "fonts/bodyFontBold";
-	if (index == 5)
-		return "fonts/titleFont";
-	if (index == 6)
-		return "fonts/ammoFont";
+		return "fonts/fira_mono_regular.ttf";
 	else
-		return "fonts/titleFont";
+		return "fonts/default.otf";
 }
 
 const char *FontDisplayNameForIndex(int index) {
 	if (index == 0)
-		return "Small Dev Font";
+		return "Default Font";
 	if (index == 1)
-		return "Big Dev Font";
+		return "Bold Default Font";
 	if (index == 2)
-		return "Console Font";
-	if (index == 3)
-		return "Body Font";
-	if (index == 4)
-		return "Body Font Bold";
-	if (index == 5)
-		return "Title Font";
-	if (index == 6)
-		return "Ammo Font";
+		return "Fira Mono Regular";
 	else
-		return "Title Font";
+		return "Default Font";
 }
 
 const char *AimbotBoneForIndex(int index) {
@@ -210,39 +194,29 @@ const char *GetRawMapname() {
 }
 
 void DrawText(const char *text, float x, float y, float fontSize, float *color, Font_s *font) {
-	R_AddCmdDrawText(text, 0x7FFFFFFF, font, x, y, fontSize, fontSize, 0.0f, color, 0);
+	AddBaseDrawTextCmd(text, 0x7FFFFFFF, font, font->pixelHeight, x, y, fontSize, fontSize, 0.0f, color, 0, -1, 0, 0);
 }
 
 void DrawText(const char *text, float x, float y, float fontSize, float *color, const char *font) {
-	R_AddCmdDrawText(text, 0x7FFFFFFF, R_RegisterFont(font, 0), x, y, fontSize, fontSize, 0.0f, color, 0);
+	Font_s *_font = R_RegisterFont(font, 0x1B, 0);
+	AddBaseDrawTextCmd(text, 0x7FFFFFFF, _font, _font->pixelHeight, x, y, fontSize, fontSize, 0.0f, color, 0, -1, 0, 0);
 }
 
 void DrawText(const char *text, float x, float y, float fontSize, float *color) {
-	R_AddCmdDrawText(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0), x, y, fontSize, fontSize, 0.0f, color, 0);
-}
-
-void DrawTextWithGlow(const char *text, float x, float y, float fontSize, float *color, float *glowColor, Font_s *font) {
-	R_AddCmdDrawTextWithEffects(text, 0x7FFFFFFF, font, x, y, fontSize, fontSize, 0.0f, color, 0, glowColor, Material_RegisterHandle("white", 0), Material_RegisterHandle("white", 0), 0, 0, 0, 0);
-}
-
-void DrawTextWithGlow(const char *text, float x, float y, float fontSize, float *color, float *glowColor, const char *font) {
-	R_AddCmdDrawTextWithEffects(text, 0x7FFFFFFF, R_RegisterFont(font, 0), x, y, fontSize, fontSize, 0.0f, color, 0, glowColor, Material_RegisterHandle("white", 0), Material_RegisterHandle("white", 0), 0, 0, 0, 0);
-}
-
-void DrawTextWithGlow(const char *text, float x, float y, float fontSize, float *color, float *glowColor) {
-	R_AddCmdDrawTextWithEffects(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0), x, y, fontSize, fontSize, 0.0f, color, 0, glowColor, Material_RegisterHandle("white", 0), Material_RegisterHandle("white", 0), 0, 0, 0, 0);
+	Font_s *_font = R_RegisterFont(FontForIndex(-1), 0x1B, 0);
+	AddBaseDrawTextCmd(text, 0x7FFFFFFF, _font, _font->pixelHeight, x, y, fontSize, fontSize, 0.0f, color, 0, -1, 0, 0);
 }
 
 void DrawShader(float x, float y, float width, float height, float *color, Material *material) {
-	R_AddCmdDrawStretchPic(x, y, width, height, 0.0f, 0.0f, 1.0f, 1.0f, color, material);
+	CG_DrawRotatedPicPhysical(ScrPlace, x, y, width, height, 0.0f, color, material);
 }
 
 void DrawShader(float x, float y, float width, float height, float *color, const char *material) {
-	R_AddCmdDrawStretchPic(x, y, width, height, 0.0f, 0.0f, 1.0f, 1.0f, color, Material_RegisterHandle(material, 0));
+	CG_DrawRotatedPicPhysical(ScrPlace, x, y, width, height, 0.0f, color, Material_RegisterHandle(material, 0));
 }
 
 void DrawShader(float x, float y, float width, float height, float *color) {
-	R_AddCmdDrawStretchPic(x, y, width, height, 0.0f, 0.0f, 1.0f, 1.0f, color, Material_RegisterHandle("white", 0));
+	CG_DrawRotatedPicPhysical(ScrPlace, x, y, width, height, 0.0f, color, Material_RegisterHandle("white", 0));
 }
 
 void DrawCenterTextWithBackground(const char *text, float x, float y, float fontSize, float *color, float *backgroundColor, Font_s *font) {
@@ -254,31 +228,31 @@ void DrawCenterTextWithBackground(const char *text, float x, float y, float font
 }
 
 void DrawCenterTextWithBackground(const char *text, float x, float y, float fontSize, float *color, float *backgroundColor, const char *font) {
-	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(font, 0)) * fontSize;
-	float textHeight = R_TextHeight(R_RegisterFont(font, 0)) * fontSize;
+	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(font, 0, 0)) * fontSize;
+	float textHeight = R_TextHeight(R_RegisterFont(font, 0, 0)) * fontSize;
 
 	DrawShader(x - textWidth / 2, y - textHeight / 2, textWidth, textHeight, backgroundColor);
 	DrawText(text, x - textWidth / 2, y + textHeight / 2, fontSize, color, font);
 }
 
 void DrawCenterTextWithBackground(const char *text, float x, float y, float fontSize, float *color, float *backgroundColor) {
-	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0)) * fontSize;
-	float textHeight = R_TextHeight(R_RegisterFont(FontForIndex(-1), 0)) * fontSize;
+	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0, 0)) * fontSize;
+	float textHeight = R_TextHeight(R_RegisterFont(FontForIndex(-1), 0, 0)) * fontSize;
 
 	DrawShader(x - textWidth / 2, y - textHeight / 2, textWidth, textHeight, backgroundColor);
 	DrawText(text, x - textWidth / 2, y + textHeight / 2, fontSize, color);
 }
 
 void DrawCenterTextWithBackgroundWithBorder(const char *text, float x, float y, float *color, float fontSize, float *backgroundColor, int borderSize, float *borderColor) {
-	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0)) * fontSize;
+	float textWidth = R_TextWidth(text, 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0, 0)) * fontSize;
 	float textHeight = R_TextHeight(MENU_FONT) * fontSize;
 
-	UI_FillRectPhysical(x - 4 - textWidth / 2, y - (textHeight * 0.2f) - borderSize - textHeight / 2, textWidth + 8, textHeight + (textHeight * 0.2f), backgroundColor);
-	UI_FillRectPhysical(x - 4 - borderSize - textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, borderSize, textHeight + (textHeight * 0.2f) + 2 * borderSize, borderColor); //left
-	UI_FillRectPhysical(x + 4 + textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, borderSize, textHeight + (textHeight * 0.2f) + 2 * borderSize, borderColor); //right
-	UI_FillRectPhysical(x - 4 - textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, textWidth + 8, borderSize, borderColor); //top
-	UI_FillRectPhysical(x - 4 - textWidth / 2, y - borderSize + textHeight / 2, textWidth + 8, borderSize, borderColor); //bottom
-	UI_DrawText(ScrPlace, text, 0x7FFFFFFF, MENU_FONT, x - textWidth / 2, y - borderSize + textHeight / 2, 0, 0, fontSize, color, 0, LocalClientNum_t::LOCAL_CLIENT_0);
+	//UI_FillRectPhysical(x - 4 - textWidth / 2, y - (textHeight * 0.2f) - borderSize - textHeight / 2, textWidth + 8, textHeight + (textHeight * 0.2f), backgroundColor);
+	//UI_FillRectPhysical(x - 4 - borderSize - textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, borderSize, textHeight + (textHeight * 0.2f) + 2 * borderSize, borderColor); //left
+	//UI_FillRectPhysical(x + 4 + textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, borderSize, textHeight + (textHeight * 0.2f) + 2 * borderSize, borderColor); //right
+	//UI_FillRectPhysical(x - 4 - textWidth / 2, y - (textHeight * 0.2f) - borderSize * 2 - textHeight / 2, textWidth + 8, borderSize, borderColor); //top
+	//UI_FillRectPhysical(x - 4 - textWidth / 2, y - borderSize + textHeight / 2, textWidth + 8, borderSize, borderColor); //bottom
+	//UI_DrawText(ScrPlace, text, 0x7FFFFFFF, MENU_FONT, x - textWidth / 2, y - borderSize + textHeight / 2, 0, 0, fontSize, color, 0, LocalClientNum_t::LOCAL_CLIENT_0);
 }
 
 void DrawLine(float x1, float y1, float x2, float y2, float width, float *color) {
@@ -289,31 +263,5 @@ void DrawLine(float x1, float y1, float x2, float y2, float width, float *color)
 	x = x1 + ((L1 - L2) / 2);
 	y = y1 + (H1 / 2);
 	angle = (float)atan(H1 / L1) * (180.0f / MATH_PI);
-	//CG_DrawRotatedPicPhysical(ScrPlace, x, y, L2, width, angle, color, *(uint64_t *)vHandler->defs.addr_Material_white, 0);
-}
-
-float hexDumpCyan[4] = { 0.0f, 0.48f, 0.8f, 1.0f };
-
-void DrawHexDump(float x, float y, uint64_t address, int length, float fontSize) {
-	int addressWidth = R_TextWidth("FFFFFFFFFFFFFFFF", 0x7FFFFFFF, R_RegisterFont(FontForIndex(-1), 0)) * fontSize;
-	
-	DrawShader(x, y, 660.0f, 40.0f + (length / 16) * 20.0f, black10);
-
-	for (int i = 0; i < 16; i++) {
-		char temp[100];
-		snprintf(temp, sizeof(temp), "%02X", i);
-		DrawText(temp, x + addressWidth + 10.0f + (i % 16) * 30.0f, y + 10.0f + R_TextHeight(FONT_DEFAULT) * fontSize + (i / 16) * 20.0f, 0.4f, hexDumpCyan);
-	}
-
-	for (int i = 0; i < length / 16; i++) {
-		char temp[100];
-		snprintf(temp, sizeof(temp), "%016X", /*address + */i * 16);
-		DrawText(temp, x + 10.0f, y + 15.0f + R_TextHeight(FONT_DEFAULT) * fontSize * 2 + i * 20.0f, 0.4f, hexDumpCyan);
-	}
-
-	for (int i = 0; i < length; i++) {
-		char temp[100];
-		snprintf(temp, sizeof(temp), "%02X", *(unsigned char *)(address + i));
-		DrawText(temp, x + addressWidth + 10.0f + (i % 16) * 30.0f, y + 15.0f + R_TextHeight(FONT_DEFAULT) * fontSize * 2 + (i / 16) * 20.0f, 0.4f, white10);
-	}
+	CG_DrawRotatedPicPhysical(ScrPlace, x, y, L2, width, angle, color, Material_RegisterHandle("white", 0));
 }
