@@ -1,6 +1,7 @@
 #pragma once
 
-#define Leveltime *(int *)(0x000000000B0FE8B0 + 0x524) //level_locals_t + 0x524
+#include "global.h"
+#include "host.h"
 
 union hudelem_color_t {
 	struct {
@@ -36,14 +37,14 @@ struct hudelem_s {
 	int materialIndex;			//0x4C
 	int fromWidth;				//0x50
 	int fromHeight;				//0x54
-	int moveStartTime;			//0x58
-	int moveTime;				//0x5C
+	int scaleStartTime;			//0x58
+	int scaleTime;				//0x5C
 	float fromX;				//0x60
 	float fromY;				//0x64
 	int fromAlignOrg;			//0x68
 	int fromAlignScreen;		//0x6C
-	int scaleStartTime;			//0x70
-	int scaleTime;				//0x74
+	int moveStartTime;			//0x70
+	int moveTime;				//0x74
 	int time;					//0x78
 	int duration;				//0x7C
 	float value;				//0x80
@@ -72,7 +73,9 @@ struct game_hudelem_s { //0xD0
 	int showInKillcam;	//0xCC
 };
 
-struct Hud {  //NOT CHECKED
+NAMESPACE(Host)
+
+struct Hud {
 	Hud(game_hudelem_s *element);
 	void SetShader(const char *shader, int width, int height, float x, float y, int alignOrg, int alignScreen, float sort, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 	void SetText(const char *text, int font, float fontScale, float x, float y, int alignOrg, int alignScreen, float sort, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned char glowR, unsigned char glowG, unsigned char glowB, unsigned char glowA);
@@ -86,4 +89,6 @@ struct Hud {  //NOT CHECKED
 	game_hudelem_s *element;
 };
 
-extern game_hudelem_s *PrecacheElem(int clientId);
+game_hudelem_s *PrecacheElem(int clientId);
+
+END

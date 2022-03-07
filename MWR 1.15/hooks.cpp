@@ -106,9 +106,9 @@ void R_EndFrame_Hook() {
 
 void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount) {
 	if (!strcmp(SL_ConvertToString(stringValue), "weapon_fired")) {
-		SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
-		//if (Menu::Options.host_magicBullet.state)
-			//Host::FireMagicBullet(*(short *)ent, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
+		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
+		if (Menu::Options.host_magicBullet.state)
+			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
 
 		//float newPos[3] = { 0.0f, 0.0f, 0.0f };
 		//Scr_AddVector(newPos);
@@ -146,21 +146,20 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//	ScriptEntCmd_CloneBrushModelToScriptModel(scriptModel->number);
 		//	ScriptEntCmd_Solid(scriptModel->number);
 		//}
+
+		if (Menu::Options.host_unfairAimbot.state) {
+			float playerAngles[3];
+			playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
+			playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
+			playerAngles[2] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 8);
+
+			float forward[3];
+			AngleVectors(playerAngles, forward, 0, 0);
+			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+		}
 	}
 
 	Scr_NotifyNum_Stub(entnum, classnum, stringValue, paramcount);
-}
-
-void SV_Cmd_TokenizeString_Hook(const char *text_in) {
-	//char temp[100];
-	//snprintf(temp, sizeof(temp), "f \"^5%s\"", text_in);
-	//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
-	//if (!strcmp(text_in, SV_CMD_R1_DOWN))
-		//*(char *)(0x000000000659C180 + 0x5370) ^= 1;
-
-	//reversed below
-	Cmd_TokenizeStringKernel(text_in, 0x200 - *(int *)0x0000000009A4C820, (CmdArgs *)0x0000000009A224E8, (CmdArgsPrivate *)0x0000000009A47800);
 }
 
 void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, VariableValue *top) {
@@ -168,20 +167,15 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 		const char *notifyString = SL_ConvertToString(stringValue);
 		int entityNum = Scr_GetSelf(notifyListOwnerId);
 
-		//char temp[100];
-		//snprintf(temp, sizeof(temp), "f \"%s\"", notifyString);
-		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);	
-
 		if (!strcmp(notifyString, "player_spawned")) {
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"player_spawned\"");
-
 			int spawnedClientIndex = Scr_GetSelf(top->u.entityOffset);
 
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^2spawnedClientIndex: %i\"", spawnedClientIndex);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 
-			//needs check if already has the same cmd registered
+			SV_GameSendServerCommand(spawnedClientIndex, svscmd_type::SV_CMD_RELIABLE, "f \"Press \x0017 ^7to ^2open ^7the menu.\"");
+
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 1", "DPAD_UP");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
@@ -190,8 +184,8 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
-			//ClientInfo[spawnedClientIndex].IsAlive = true;
-			//EnableMenu(spawnedClientIndex, host);
+
+			Host::Menu::OnPlayerSpawned(spawnedClientIndex);
 		}
 		if (!strcmp(notifyString, "DPAD_UP")) {
 			char temp[100];
@@ -224,6 +218,8 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			char temp[100];
 			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_RIGHT\"", entityNum);
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+
+			Host::Menu::OpenCloseMenu(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				G_FreeEntity(Host::Forge::clientCurrentEntity[entityNum]);

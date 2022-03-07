@@ -7,20 +7,52 @@
 
 NAMESPACE(Host)
 
+void AddFriendlyBot() {
+	if ((*(char *)(0x00000000148BAAF0 + 0x0F) + *(char *)(0x00000000148BAAF0 + 0x10)) < 17)
+		(*(char *)(0x00000000148BAAF0 + 0x0F))++;
+}
+
+void RemoveFriendlyBot() {
+	if (*(char *)(0x00000000148BAAF0 + 0x0F) > 0)
+		(*(char *)(0x00000000148BAAF0 + 0x0F))--;
+}
+
+void AddEnemyBot() {
+	if((*(char *)(0x00000000148BAAF0 + 0x0F) + *(char *)(0x00000000148BAAF0 + 0x10)) < 17)
+		(*(char *)(0x00000000148BAAF0 + 0x10))++;
+}
+
+void RemoveEnemyBot() {
+	if (*(char *)(0x00000000148BAAF0 + 0x10) > 0)
+		(*(char *)(0x00000000148BAAF0 + 0x10))--;
+}
+
 void FireMagicBullet(short entNum, const char *projectile) {
 	float playerAngles[3];
-	playerAngles[0] = *(float *)((entNum * 0x5780) + 0x000000000659C180 + 0x1B4);
-	playerAngles[1] = *(float *)((entNum * 0x5780) + 0x000000000659C180 + 0x1B4 + 4);
-	playerAngles[2] = *(float *)((entNum * 0x5780) + 0x000000000659C180 + 0x1B4 + 8);
+	playerAngles[0] = *(float *)((entNum * gclient_size) + gclient_t + 0x12C);
+	playerAngles[1] = *(float *)((entNum * gclient_size) + gclient_t + 0x12C + 4);
+	playerAngles[2] = *(float *)((entNum * gclient_size) + gclient_t + 0x12C + 8);
 
 	float forward[3];
 	AngleVectors(playerAngles, forward, 0, 0);
+	//forward[0] *= 999999999.0f;
+	//forward[1] *= 999999999.0f;
+	//forward[2] *= 999999999.0f;
+
+	float viewOrigin[3];
+	viewOrigin[0] = *(float *)((entNum * gclient_size) + gclient_t + 0x78);
+	viewOrigin[1] = *(float *)((entNum * gclient_size) + gclient_t + 0x78 + 4);
+	viewOrigin[2] = *(float *)((entNum * gclient_size) + gclient_t + 0x78 + 8) + 65.0f;
+	//G_DObjGetWorldTagPos((gentity_s *)0x00000000064293D0 + (entNum * 0x2E0), SL_GetString("tag_weapon_right", 0), startPos);
+
+	float startPos[3];
+	startPos[0] = viewOrigin[0] + forward[0] * 50.0f;
+	startPos[1] = viewOrigin[1] + forward[1] * 50.0f;
+	startPos[2] = viewOrigin[2] + forward[2] * 50.0f;
+
 	forward[0] *= 999999999.0f;
 	forward[1] *= 999999999.0f;
 	forward[2] *= 999999999.0f;
-
-	float startPos[3];
-	G_DObjGetWorldTagPos((gentity_s *)0x00000000064293D0 + (entNum * 0x2E0), SL_GetString("tag_weapon_right", 0), startPos);
 
 	Scr_AddVector(forward);
 	Scr_AddVector(startPos);
@@ -154,6 +186,39 @@ const char *GetModelNameFromEntity(gentity_s *ent) {
 
 END
 NAMESPACE(Menu)
+
+bool menuOpen[MAX_MENU_CLIENTS];
+
+game_hudelem_s *background[MAX_MENU_CLIENTS];
+game_hudelem_s *header[MAX_MENU_CLIENTS];
+game_hudelem_s *options[MAX_MENU_CLIENTS][10];
+
+void OnPlayerSpawned(int i) {
+	menuOpen[i] = true;
+	HudElem_DestroyClient(i);
+
+	background[i] = PrecacheElem(i);
+	header[i] = PrecacheElem(i);
+
+	Hud(background[i]).SetShader("white", 200, 300, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
+	Hud(header[i]).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
+}
+
+void OpenCloseMenu(int i) {
+	if (!background[i] || !header[i])
+		return;
+
+	if (menuOpen[i]) {
+		Hud(background[i]).MoveOverTime(250, 1000.0f, 200.0f);
+		Hud(header[i]).MoveOverTime(250, 1000.0f, 70.0f);
+	}
+	else {
+		Hud(background[i]).MoveOverTime(250, 600.0f, 200.0f);
+		Hud(header[i]).MoveOverTime(250, 600.0f, 70.0f);
+	}
+
+	menuOpen[i] = !menuOpen[i];
+}
 
 END
 NAMESPACE(Forge)

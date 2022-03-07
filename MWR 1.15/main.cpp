@@ -44,14 +44,14 @@ void RgbThread() {
 
 void TestAllClientHuds() {
 	HudElem_DestroyAll();
-	game_hudelem_s *textTest = PrecacheElem(0x7FF);
-	game_hudelem_s *testTypewriter = PrecacheElem(0x7FF);
-	game_hudelem_s *testHud = PrecacheElem(0x7FF);
+	game_hudelem_s *testTypewriter = Host::PrecacheElem(0x7FF);
+	game_hudelem_s *testText = Host::PrecacheElem(0x7FF);
+	game_hudelem_s *testHud = Host::PrecacheElem(0x7FF);
 
-	Hud(testTypewriter).SetText("", 6, 1.0f, 300, 50, 5, 0, 10, 255, 255, 255, 255, 204, 0, 221, 255);
-	Hud(testTypewriter).TypeWriterText("Typewriter text on AW 1.24");
-	Hud(textTest).SetText("Testing all client text on AW", 6, 1.0f, 200, 150, 5, 0, 10, 255, 255, 255, 255, 204, 0, 221, 255);
-	Hud(testHud).SetShader("white", 250, 50, 200, 150, 5, 0, 0, 0, 0, 0, 175);
+	Host::Hud(testTypewriter).SetText("AAAAAA ", 1, 0.5f, 200.0f, 0.0f, 0, 0, 10.0f, 255, 255, 255, 255, 0, 127, 0, 255);
+	Host::Hud(testTypewriter).TypeWriterText("AAAAAA Typewriter text on MWR 1.15");
+	Host::Hud(testText).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
+	Host::Hud(testHud).SetShader("white", 200, 300, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
 }
 
 void DetectGame() {
@@ -141,13 +141,15 @@ void DetectGame() {
 
 		WriteJump(0x00000000007E07E0, (uint64_t)Hooks::LUI_LuaCall_DebugPrint);
 		///WriteJump(0x0000000000A18320, (uint64_t)Hooks::R_EndFrame_Hook);
-		///WriteJump(0x00000000007F6CC0, (uint64_t)Hooks::SV_Cmd_TokenizeString_Hook);
 
 		//uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_pipeline.d3dbsp", 0);
 		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
 
 		//uint64_t assetHeader = DB_FindXAssetHeader(XAssetType::ASSET_TYPE_STRINGTABLE, "mp/botNodePatch.csv", 0);
 		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
+
+		//const char *retVal = SL_ConvertToString((scr_string_t)1278);
+		//uartprintf("[MWR 1.15] SL_ConvertToString returned: 0x%llX\n", retVal);
 
 		///PrintLoadedZones();
 		///uartprintf("[MWR 1.15] %s", Host::Entity::GetModelNameFromEntity(0));
@@ -156,19 +158,11 @@ void DetectGame() {
 		///G_GetOrigin(LocalClientNum_t::LOCAL_CLIENT_0, 0, pos);
 		///Host::Entity::SpawnScriptModel("dyn_ven_banners_tube_01_intct", pos);
 
-		///GScr_MapRestart();
+		//GScr_MapRestart();
 
 		Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 90");
-		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "c \"^2Dizz ^7is bae ^1<3\"");
-		//uartprintf("[MWR 1.15] SL_ConvertToString: %s\n", SL_ConvertToString((scr_string_t)0x16)); //(0x168 - 8) >> 4 = 0x16
 
-		HudElem_DestroyAll();
-
-		game_hudelem_s *elem = HudElem_Alloc(0, 0);
-		uartprintf("[MWR 1.15] HudElem_Alloc(0, 0); -> 0x%llX\n", elem);
-
-		int materialIndex = G_MaterialIndex("white");
-		uartprintf("[MWR 1.15] G_MaterialIndex(\"white\"); -> 0x%llX\n", materialIndex);
+		//TestAllClientHuds();
 	}
 	else {
 		sceSysUtilSendSystemNotificationWithText(222, "Welcome to MWR 1.15");
@@ -200,3 +194,5 @@ extern "C" void _main(void) {
 //maps d3dbsp at 0x000000000B0FE848 most be something like inside level_locals_t
 
 //0x000000000B0FE8B0 + 0x2C (level_locals_t) set compass objective (0x14 = lines)
+
+//0000000000AD904D   lea r8, dword_1074AB8   inlined G_GetRandomSeed

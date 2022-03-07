@@ -14,5 +14,8 @@ This project compiles to a .elf file which can be loaded with the help of payloa
 
 ## Building
 In order to build this project, you need the linux sub system installed for Windows 10 with clang.
-Optionally you can build with just the linux shell.
 The project has a visual studio solution using post build events to build with wsl.
+Optionally you can build with just the linux shell.
+
+
+###### Shout out to DizzRL for his help with this project.

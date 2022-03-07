@@ -8,6 +8,28 @@ typedef unsigned short scr_string_t;
 
 //
 
+enum entityType_t {
+	ET_GENERAL = 0x00,
+	ET_PLAYER = 0x01,
+	ET_PLAYER_CORPSE = 0x02,
+	ET_ITEM = 0x03,
+	ET_MISSILE = 0x04,
+	ET_INVISIBLE = 0x05,
+	ET_SCRIPTMOVER = 0x06,
+	ET_SOUND_BLEND = 0x07,
+	ET_FX = 0x08,
+	ET_LOOP_FX = 0x09,
+	ET_PRIMARY_LIGHT = 0x0A,
+	ET_HELICOPTER = 0x0B,
+	ET_PLANE = 0x0C,
+	ET_VEHICLE = 0x0D,
+	ET_VEHICLE_COLLMAP = 0x0E,
+	ET_VEHICLE_CORPSE = 0x0F,
+	ET_VEHICLE_SPAWNER = 0x10,
+	ET_AGENT = 0x11,
+	ET_AGENT_CORPSE = 0x12
+};
+
 enum GfxRenderCommand {
 	//...
 };
@@ -22,13 +44,41 @@ enum he_type_t {
 	HE_TYPE_VALUE = 0x02,
 	HE_TYPE_PLAYERNAME = 0x03,
 	HE_TYPE_MATERIAL = 0x04,
-	//...
+	HE_TYPE_TIMER_DOWN = 0x05,
 	HE_TYPE_TIMER_UP = 0x06,
-	//...
-	HE_TYPE_TENTHS_TIMER_UP = 0x09
-	//...
+	HE_TYPE_TIMER_STATIC = 0x07,
+	HE_TYPE_TENTHS_TIMER_DOWN = 0x08,
+	HE_TYPE_TENTHS_TIMER_UP = 0x09,
+	HE_TYPE_TENTHS_TIMER_STATIC = 0x0A,
+	HE_TYPE_CLOCK_DOWN = 0x0B,
+	HE_TYPE_CLOCK_UP = 0x0C,
+	HE_TYPE_WAYPOINT = 0x0D,
+	HE_TYPE_COUNT = 0x0E
 };
 
+enum hitLocation_t { //PDB, not confirmed
+	HITLOC_NONE = 0x0,
+	HITLOC_HELMET = 0x1,
+	HITLOC_HEAD = 0x2,
+	HITLOC_NECK = 0x3,
+	HITLOC_TORSO_UPR = 0x4,
+	HITLOC_TORSO_LWR = 0x5,
+	HITLOC_R_ARM_UPR = 0x6,
+	HITLOC_L_ARM_UPR = 0x7,
+	HITLOC_R_ARM_LWR = 0x8,
+	HITLOC_L_ARM_LWR = 0x9,
+	HITLOC_R_HAND = 0xA,
+	HITLOC_L_HAND = 0xB,
+	HITLOC_R_LEG_UPR = 0xC,
+	HITLOC_L_LEG_UPR = 0xD,
+	HITLOC_R_LEG_LWR = 0xE,
+	HITLOC_L_LEG_LWR = 0xF,
+	HITLOC_R_FOOT = 0x10,
+	HITLOC_L_FOOT = 0x11,
+	HITLOC_GUN = 0x12,
+	HITLOC_SHIELD = 0x13,
+	HITLOC_NUM = 0x14
+};
 
 enum LocalClientNum_t : int {
 	INVALID_LOCAL_CLIENT = -1,
@@ -49,8 +99,7 @@ enum svscmd_type {
 	SV_CMD_RELIABLE = 1
 };
 
-enum XAssetType
-{
+enum XAssetType {
 	//ASSET_TYPE_PHYSPRESET = 0x00,
 	//ASSET_TYPE_PHYSCOLLMAP = 0x01,
 	//ASSET_TYPE_PHYSWATERPRESET = 0x02,
@@ -154,7 +203,7 @@ struct usercmd_s { // 0x44 AW
 	//...
 };
 
-struct gclient_s {
+struct gclient_s { //0x5000
 	//mwr:
 	//0x5C fof flag
 	//...
@@ -272,6 +321,10 @@ struct VariableValue {
 	int type;
 };
 
+union Weapon {
+	int data;
+};
+
 
 
 
@@ -305,36 +358,7 @@ enum ucmdButtonFlag_t {
 	UCMD_BTN_R2 = 0x80000000,
 };
 
-enum entityType_t {
-	ET_GENERAL = 0x00,
-	ET_PLAYER = 0x01,
-	ET_PLAYER_CORPSE = 0x02, //
-	ET_ITEM = 0x03, //
-	ET_MISSILE = 0x04,
-	ET_PLAYER_INVISIBLE = 0x05, //
-	ET_SCRIPTMOVER = 0x06,
-	//ET_SOUND_BLEND = 0x07, //
-	//ET_FX = 0x08, //
-	//ET_LOOP_FX = 0x09, //
-	//ET_PRIMARY_LIGHT = 0x0A, //
-	//ET_LENSFLARE = 0x0B, //
-	//ET_REFLECTION_PROBE = 0x0C, //
-	//ET_HELICOPTER = 0x0D, //
-	//ET_PLANE = 0x0E, //
-	ET_VEHICLE = 0x0C,
-	//ET_VEHICLE_SPAWNER = 0x10, //
-	//ET_VEHICLE_CORPSE = 0x11, //
-	ET_ACTOR = 0x0F,
-	ET_ACTOR_SPAWNER = 0x10,
-	ET_ACTOR_CORPSE = 0x11,
-	ET_STREAMER_HINT = 0x12, //
-	ET_ZBARRIER = 0x13,
-	ET_TRIGGER = 0x14, //
-	ET_EVENTS = 0x18 //
-};
-
-struct ScreenPlacement //size = 0x74 //mwr size = 0x6C ?
-{
+struct ScreenPlacement { //size = 0x74 //mwr size = 0x6C ?
 	float scaleVirtualToReal[2];	//0x00
 	float scaleVirtualToFull[2];	//0x08
 	float scaleRealToVirtual[2];	//0x10

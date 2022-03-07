@@ -33,8 +33,6 @@ void R_EndFrame_Hook();
 
 void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount);
 
-void SV_Cmd_TokenizeString_Hook(const char *text_in);
-
 void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, VariableValue *top);
 
 END

@@ -13,12 +13,14 @@ Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
+G_Damage_t G_Damage;
 G_DObjGetWorldTagPos_t G_DObjGetWorldTagPos;
 G_FindConfigstringIndex_t G_FindConfigstringIndex;
 G_FreeEntity_t G_FreeEntity;
 G_GetAngles_t G_GetAngles;
 G_GetOrigin_t G_GetOrigin;
 G_GetPlayerViewOrigin_t G_GetPlayerViewOrigin;
+G_GetWeaponForName_t G_GetWeaponForName;
 G_LocationalTrace_t G_LocationalTrace;
 G_ModelName_t G_ModelName;
 G_SetAngle_t G_SetAngle;
@@ -158,7 +160,8 @@ void Cmd_RegisterNotification(int clientNum, const char *commandString, const ch
 }
 
 int G_LocalizedStringIndex(const char *string) { //reversed from 0x0000000000A66DA0 (HECmd_SetText + 0x90)
-	return G_FindConfigstringIndex(string, (ConfigString)0x21D, 0x28A, 0, "localized string");
+	int create = *(int *)0x000000000B0FE8B0;
+	return G_FindConfigstringIndex(string, (ConfigString)0x21D, 0x28A, create == 0 ? 1 : 0, "localized string");
 }
 
 int G_MaterialIndex(const char *name) { //reversed from 0x0000000000AF322A
@@ -182,9 +185,23 @@ void G_SetOrigin(gentity_s *ent, const float *origin) { //custom
 
 void HudElem_DestroyAll() { //custom
 	int offset = 0;
-
 	while (offset < 0x30000) {
 		*(int *)(0x000000000B0BC840/*g_hudelems*/ + offset + 0x1C) = he_type_t::HE_TYPE_FREE;
+		offset += 0xD0;
+	}
+}
+
+void HudElem_DestroyClient(int clientIndex) { //custom
+	if (clientIndex == -1) {
+		HudElem_DestroyAll();
+		return;
+	}
+	
+	int offset = 0;
+	uint64_t g_hudelems = 0x000000000B0BC840;
+	while (offset < 0x30000) { //elem + 0x00 && elem + 0x01 //custom check applied in PrecacheElem
+		if (*(short *)(g_hudelems + offset + 0x00) == 1 && *(short *)(g_hudelems + offset + 0x02) == 1 && *(int *)(g_hudelems + offset + 0xC0) == clientIndex)
+			*(int *)(g_hudelems + offset + 0x1C) = he_type_t::HE_TYPE_FREE;
 		offset += 0xD0;
 	}
 }
@@ -319,7 +336,7 @@ void SV_GameSendServerCommand(signed char clientNum, svscmd_type type, const cha
 	if (clientNum == -1)
 		SV_SendServerCommand(0, type, text);
 	else {
-		uint64_t client_s = *(uint64_t *)(0x00000000026B7E10) + (clientNum * 0xE7680);
-		SV_SendServerCommand((client_t *)client_s, type, text);
+		client_t *client_s = (client_t *)(*(uint64_t *)(0x00000000026B7E10) + (clientNum * 0xE7680));
+		SV_SendServerCommand(client_s, type, text);
 	}
 }
