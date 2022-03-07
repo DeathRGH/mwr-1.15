@@ -8,6 +8,28 @@ typedef unsigned short scr_string_t;
 
 //
 
+enum entityType_t {
+	ET_GENERAL = 0x00,
+	ET_PLAYER = 0x01,
+	ET_PLAYER_CORPSE = 0x02,
+	ET_ITEM = 0x03,
+	ET_MISSILE = 0x04,
+	ET_INVISIBLE = 0x05,
+	ET_SCRIPTMOVER = 0x06,
+	ET_SOUND_BLEND = 0x07,
+	ET_FX = 0x08,
+	ET_LOOP_FX = 0x09,
+	ET_PRIMARY_LIGHT = 0x0A,
+	ET_HELICOPTER = 0x0B,
+	ET_PLANE = 0x0C,
+	ET_VEHICLE = 0x0D,
+	ET_VEHICLE_COLLMAP = 0x0E,
+	ET_VEHICLE_CORPSE = 0x0F,
+	ET_VEHICLE_SPAWNER = 0x10,
+	ET_AGENT = 0x11,
+	ET_AGENT_CORPSE = 0x12
+};
+
 enum GfxRenderCommand {
 	//...
 };
@@ -336,36 +358,7 @@ enum ucmdButtonFlag_t {
 	UCMD_BTN_R2 = 0x80000000,
 };
 
-enum entityType_t {
-	ET_GENERAL = 0x00,
-	ET_PLAYER = 0x01,
-	ET_PLAYER_CORPSE = 0x02, //
-	ET_ITEM = 0x03, //
-	ET_MISSILE = 0x04,
-	ET_PLAYER_INVISIBLE = 0x05, //
-	ET_SCRIPTMOVER = 0x06,
-	//ET_SOUND_BLEND = 0x07, //
-	//ET_FX = 0x08, //
-	//ET_LOOP_FX = 0x09, //
-	//ET_PRIMARY_LIGHT = 0x0A, //
-	//ET_LENSFLARE = 0x0B, //
-	//ET_REFLECTION_PROBE = 0x0C, //
-	//ET_HELICOPTER = 0x0D, //
-	//ET_PLANE = 0x0E, //
-	ET_VEHICLE = 0x0C,
-	//ET_VEHICLE_SPAWNER = 0x10, //
-	//ET_VEHICLE_CORPSE = 0x11, //
-	ET_ACTOR = 0x0F,
-	ET_ACTOR_SPAWNER = 0x10,
-	ET_ACTOR_CORPSE = 0x11,
-	ET_STREAMER_HINT = 0x12, //
-	ET_ZBARRIER = 0x13,
-	ET_TRIGGER = 0x14, //
-	ET_EVENTS = 0x18 //
-};
-
-struct ScreenPlacement //size = 0x74 //mwr size = 0x6C ?
-{
+struct ScreenPlacement { //size = 0x74 //mwr size = 0x6C ?
 	float scaleVirtualToReal[2];	//0x00
 	float scaleVirtualToFull[2];	//0x08
 	float scaleRealToVirtual[2];	//0x10

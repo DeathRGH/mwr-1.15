@@ -49,6 +49,8 @@ struct Options_t {
 
 	BoolMenuOption host_magicBullet;
 	IntMenuOption host_magicBulletProjectileIndex;
+	BoolMenuOption host_unfairAimbot;
+	IntMenuOption host_unfairAimbotWeaponIndex;
 
 	//declare sub menus here
 	SubMenuMenuOption Sub_Debug;

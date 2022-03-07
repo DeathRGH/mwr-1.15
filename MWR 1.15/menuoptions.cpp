@@ -25,7 +25,7 @@ void Init() {
 	SetupInt(&Options.menuX, 50, 50, 1920, 0);
 	SetupInt(&Options.menuY, 50, 50, 1080, 0);
 	SetupInt(&Options.menuWidth, 700, 700, 4000, 0);
-	SetupInt(&Options.menuHeight, 725, 725, 3000, 0);
+	SetupInt(&Options.menuHeight, 780, 780, 3000, 0);
 	SetupInt(&Options.menuBorder, 0, 0, 20, 0);
 	SetupInt(&Options.menuFontIndex, 1, 1, NUM_FONTS, 0);
 	SetupFloat(&Options.menuFontSize, 1.0f, 1.0f, 2.0f, 0.01f, 0.001f);
@@ -44,6 +44,8 @@ void Init() {
 
 	SetupBool(&Options.host_magicBullet, false);
 	SetupInt(&Options.host_magicBulletProjectileIndex, 0, 0, 1, 0);
+	SetupBool(&Options.host_unfairAimbot, false);
+	SetupInt(&Options.host_unfairAimbotWeaponIndex, 0, 0, 106, 0);
 }
 
 END

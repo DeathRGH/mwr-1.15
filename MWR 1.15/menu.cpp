@@ -199,6 +199,8 @@ void DrawMenuText() {
 		DrawColorSubMenuButton("Menu Control Background Color", &Options.color_menuControlBackground, &Options.Sub_Color_MenuControlBackground, submenus::Sub_Color_MenuControlBackground);
 		DrawToggle("host_magicBullet", &Options.host_magicBullet);
 		DrawIntSlider("host_magicBulletProjectileIndex", &Options.host_magicBulletProjectileIndex, MagicBulletProjectileForIndex(Options.host_magicBulletProjectileIndex.current));
+		DrawToggle("host_unfairAimbot", &Options.host_unfairAimbot);
+		DrawIntSlider("host_unfairAimbotWeaponIndex", &Options.host_unfairAimbotWeaponIndex, AimbotWeaponForIndex(Options.host_unfairAimbotWeaponIndex.current));
 	}
 
 	if (Options.menuPageIndex == submenus::Sub_Color_MenuBorder)

@@ -141,7 +141,6 @@ void DetectGame() {
 
 		WriteJump(0x00000000007E07E0, (uint64_t)Hooks::LUI_LuaCall_DebugPrint);
 		///WriteJump(0x0000000000A18320, (uint64_t)Hooks::R_EndFrame_Hook);
-		///WriteJump(0x00000000007F6CC0, (uint64_t)Hooks::SV_Cmd_TokenizeString_Hook);
 
 		//uint64_t assetHeader = DB_FindXAssetHeader(/*XAssetType::ASSET_TYPE_MAP_ENTS*/(XAssetType)0x1C, "maps/mp/mp_pipeline.d3dbsp", 0);
 		//uartprintf("[MWR 1.15] DB_FindXAssetHeader returned: 0x%llX\n", assetHeader);
@@ -197,24 +196,3 @@ extern "C" void _main(void) {
 //0x000000000B0FE8B0 + 0x2C (level_locals_t) set compass objective (0x14 = lines)
 
 //0000000000AD904D   lea r8, dword_1074AB8   inlined G_GetRandomSeed
-
-//0x1059BE0   entity types
-//CODE:0000000000FA7D23 aGeneral        db 'General', 0
-//CODE:0000000000FA7D2B aPlayer_0       db 'Player', 0
-//CODE:0000000000FA7D32 aCorpse         db 'Corpse', 0
-//CODE:0000000000FA7D39 aItem_0         db 'Item', 0
-//CODE:0000000000FA7D3E aMissile_0      db 'Missile', 0
-//CODE:0000000000FA7D46 aInvisibleEntit db 'Invisible entity', 0
-//CODE:0000000000FA7D57 aScriptmover    db 'Scriptmover', 0
-//CODE:0000000000FA7D63 aSoundBlend     db 'Sound blend', 0
-//CODE:0000000000FA7D6F aFx_0           db 'FX', 0
-//CODE:0000000000FA7D72 aLoopFx         db 'Loop FX', 0
-//CODE:0000000000FA7D7A aPrimaryLight   db 'Primary Light', 0
-//CODE:0000000000FA7D88 aHelicopter_0   db 'Helicopter', 0
-//CODE:0000000000FA7D93 aPlane          db 'Plane', 0
-//CODE:0000000000FA7D99 aVehicle        db 'Vehicle', 0
-//CODE:0000000000FA7DA1 aVehicleCollmap db 'Vehicle collmap', 0
-//CODE:0000000000FA7DB1 aVehicleCorpse  db 'Vehicle corpse', 0
-//CODE:0000000000FA7DC0 aVehicleSpawner db 'Vehicle spawner', 0
-//CODE:0000000000FA7DD0 aAgent_0        db 'Agent', 0
-//CODE:0000000000FA7DD6 aAgentCorpse    db 'Agent Corpse', 0

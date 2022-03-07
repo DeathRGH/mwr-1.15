@@ -82,6 +82,225 @@ const char *MagicBulletProjectileForIndex(int index) {
 		return "h1_rpg_mp";
 }
 
+const char *AimbotWeaponForIndex(int index) {
+	if (index == 0)
+		return "airstrike_mp";
+	if (index == 1)
+		return "artillery_mp";
+	if (index == 2)
+		return "barrel_mp";
+	if (index == 3)
+		return "bomb_site_mp";
+	if (index == 4)
+		return "briefcase_bomb_defuse_mp";
+	if (index == 5)
+		return "briefcase_bomb_mp";
+	if (index == 6)
+		return "camera_10fov";
+	if (index == 7)
+		return "camera_20fov";
+	if (index == 8)
+		return "camera_30fov";
+	if (index == 9)
+		return "camera_45fov";
+	if (index == 10)
+		return "camera_5fov";
+	if (index == 11)
+		return "cobra_20mm_mp";
+	if (index == 12)
+		return "cobra_ffar_mp";
+	if (index == 13)
+		return "defaultweapon_mp";
+	if (index == 14)
+		return "destructible_car";
+	if (index == 15)
+		return "destructible_toy";
+	if (index == 16)
+		return "h1_ak47_mp";
+	if (index == 17)
+		return "h1_ak74u_mp";
+	if (index == 18)
+		return "h1_aprast_mp";
+	if (index == 19)
+		return "h1_aprpst_mp";
+	if (index == 20)
+		return "h1_aprsmg_mp";
+	if (index == 21)
+		return "h1_augast_mp";
+	if (index == 22)
+		return "h1_augpst_mp";
+	if (index == 23)
+		return "h1_augsmg_mp";
+	if (index == 24)
+		return "h1_barrett_mp";
+	if (index == 25)
+		return "h1_beretta_mp";
+	if (index == 26)
+		return "h1_c4_mp";
+	if (index == 27)
+		return "h1_claymore_mp";
+	if (index == 28)
+		return "h1_colt45_mp";
+	if (index == 29)
+		return "h1_coltanaconda_mp";
+	if (index == 30)
+		return "h1_concussiongrenade_mp";
+	if (index == 31)
+		return "h1_deserteagle55_mp";
+	if (index == 32)
+		return "h1_deserteagle_mp";
+	if (index == 33)
+		return "h1_dragunov_mp";
+	if (index == 34)
+		return "h1_fal_mp";
+	if (index == 35)
+		return "h1_feblmg_mp";
+	if (index == 36)
+		return "h1_febsmg_mp";
+	if (index == 37)
+		return "h1_febsnp_mp";
+	if (index == 38)
+		return "h1_flashgrenade_mp";
+	if (index == 39)
+		return "h1_fraggrenadeshort_mp";
+	if (index == 40)
+		return "h1_fraggrenade_mp";
+	if (index == 41)
+		return "h1_g36c_mp";
+	if (index == 42)
+		return "h1_g3_mp";
+	if (index == 43)
+		return "h1_galil_mp";
+	if (index == 44)
+		return "h1_janpst_mp";
+	if (index == 45)
+		return "h1_junlmg_mp";
+	if (index == 46)
+		return "h1_junsho_mp";
+	if (index == 47)
+		return "h1_junsnp_mp";
+	if (index == 48)
+		return "h1_kam12_mp";
+	if (index == 49)
+		return "h1_m1014_mp";
+	if (index == 50)
+		return "h1_m14_mp";
+	if (index == 51)
+		return "h1_m16_mp";
+	if (index == 52)
+		return "h1_m21_mp";
+	if (index == 53)
+		return "h1_m240_mp";
+	if (index == 54)
+		return "h1_m40a3_mp";
+	if (index == 55)
+		return "h1_m4_mp";
+	if (index == 56)
+		return "h1_m60e4_mp";
+	if (index == 57)
+		return "h1_mac10_mp";
+	if (index == 58)
+		return "h1_meleeapr1_mp";
+	if (index == 59)
+		return "h1_meleeapr2_mp";
+	if (index == 60)
+		return "h1_meleeapr3_mp";
+	if (index == 61)
+		return "h1_meleeapr4_mp";
+	if (index == 62)
+		return "h1_meleeaug1_mp";
+	if (index == 63)
+		return "h1_meleeaug2_mp";
+	if (index == 64)
+		return "h1_meleeaug3_mp";
+	if (index == 65)
+		return "h1_meleeaug4_mp";
+	if (index == 66)
+		return "h1_meleebayonet_mp";
+	if (index == 67)
+		return "h1_meleeblade_mp";
+	if (index == 68)
+		return "h1_meleebottle_mp";
+	if (index == 69)
+		return "h1_meleefeb1_mp";
+	if (index == 70)
+		return "h1_meleefeb2_mp";
+	if (index == 71)
+		return "h1_meleefeb3_mp";
+	if (index == 72)
+		return "h1_meleefeb4_mp";
+	if (index == 73)
+		return "h1_meleefeb5_mp";
+	if (index == 74)
+		return "h1_meleefuture1_mp";
+	if (index == 75)
+		return "h1_meleefuture2_mp";
+	if (index == 76)
+		return "h1_meleegladius_mp";
+	if (index == 77)
+		return "h1_meleehatchet_mp";
+	if (index == 78)
+		return "h1_meleeicepick_mp";
+	if (index == 79)
+		return "h1_meleejun1_mp";
+	if (index == 80)
+		return "h1_meleejun2_mp";
+	if (index == 81)
+		return "h1_meleejun3_mp";
+	if (index == 82)
+		return "h1_meleejun4_mp";
+	if (index == 83)
+		return "h1_meleejun5_mp";
+	if (index == 84)
+		return "h1_meleejun6_mp";
+	if (index == 85)
+		return "h1_meleepaddle_mp";
+	if (index == 86)
+		return "h1_meleeshovel_mp";
+	if (index == 87)
+		return "h1_meleesickle_mp";
+	if (index == 88)
+		return "h1_mp44_mp";
+	if (index == 89)
+		return "h1_mp5_mp";
+	if (index == 90)
+		return "h1_p90_mp";
+	if (index == 91)
+		return "h1_pp2000_mp";
+	if (index == 92)
+		return "h1_remington700_mp";
+	if (index == 93)
+		return "h1_rpd_mp";
+	if (index == 94)
+		return "h1_rpg_mp";
+	if (index == 95)
+		return "h1_saw_mp";
+	if (index == 96)
+		return "h1_skorpion_mp";
+	if (index == 97)
+		return "h1_smokegrenade_mp";
+	if (index == 98)
+		return "h1_striker_mp";
+	if (index == 99)
+		return "h1_usp_mp";
+	if (index == 100)
+		return "h1_uzi_mp";
+	if (index == 101)
+		return "h1_vssvintorez_mp";
+	if (index == 102)
+		return "h1_winchester1200_mp";
+	if (index == 103)
+		return "h1_xmlar_mp";
+	if (index == 104)
+		return "helicopter_mp";
+	if (index == 105)
+		return "hind_ffar_mp";
+	if (index == 106)
+		return "radar_mp";
+	else
+		return "defaultweapon_mp";
+}
+
 const char *GetRawWeaponNameForIndex(int id) {
 	return (char *)(*(long long *)(*(long long *)(bg_weaponCompleteDefs + ((id * 8) & 0x3FC)) + 0x10));
 }

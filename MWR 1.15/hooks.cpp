@@ -147,30 +147,19 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//	ScriptEntCmd_Solid(scriptModel->number);
 		//}
 
-		//NOT TESTED:
-		float playerAngles[3];
-		playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
-		playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
-		playerAngles[2] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 8);
+		if (Menu::Options.host_unfairAimbot.state) {
+			float playerAngles[3];
+			playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
+			playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
+			playerAngles[2] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 8);
 
-		float forward[3];
-		AngleVectors(playerAngles, forward, 0, 0);
-		G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName("bomb_site_mp"), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+			float forward[3];
+			AngleVectors(playerAngles, forward, 0, 0);
+			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+		}
 	}
 
 	Scr_NotifyNum_Stub(entnum, classnum, stringValue, paramcount);
-}
-
-void SV_Cmd_TokenizeString_Hook(const char *text_in) {
-	//char temp[100];
-	//snprintf(temp, sizeof(temp), "f \"^5%s\"", text_in);
-	//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
-	//if (!strcmp(text_in, SV_CMD_R1_DOWN))
-		//*(char *)(0x000000000659C180 + 0x5370) ^= 1;
-
-	//reversed below
-	Cmd_TokenizeStringKernel(text_in, 0x200 - *(int *)0x0000000009A4C820, (CmdArgs *)0x0000000009A224E8, (CmdArgsPrivate *)0x0000000009A47800);
 }
 
 void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, VariableValue *top) {
