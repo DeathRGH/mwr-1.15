@@ -149,13 +149,13 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 
 		//NOT TESTED:
 		float playerAngles[3];
-		playerAngles[0] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C);
-		playerAngles[1] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C + 4);
-		playerAngles[2] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C + 8);
+		playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
+		playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
+		playerAngles[2] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 8);
 
 		float forward[3];
 		AngleVectors(playerAngles, forward, 0, 0);
-		///G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName("bomb_site_mp"), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+		G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName("bomb_site_mp"), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
 	}
 
 	Scr_NotifyNum_Stub(entnum, classnum, stringValue, paramcount);
