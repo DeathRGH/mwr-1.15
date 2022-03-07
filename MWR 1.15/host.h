@@ -45,7 +45,6 @@ extern struct game_hudelem_s *header[MAX_MENU_CLIENTS];
 extern struct game_hudelem_s *options[MAX_MENU_CLIENTS][10];
 
 void OnPlayerSpawned(int i);
-void OnPlayerDeath(int i);
 void OpenCloseMenu(int i);
 
 END

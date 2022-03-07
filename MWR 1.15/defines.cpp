@@ -77,57 +77,9 @@ const char *AimbotBoneForIndex(int index) {
 
 const char *MagicBulletProjectileForIndex(int index) {
 	if (index == 0)
-		return "gl_mp";
-	if (index == 1)
-		return "iw5_exocrossbow_mp";
-	if (index == 2)
-		return "iw5_exocrossbowblops2_mp";
-	if (index == 3)
-		return "iw5_exocrossbowloot0_mp";
-	if (index == 4)
-		return "iw5_exocrossbowloot1_mp";
-	if (index == 5)
-		return "iw5_exocrossbowloot2_mp";
-	if (index == 6)
-		return "iw5_exocrossbowloot3_mp";
-	if (index == 7)
-		return "iw5_juggernautrockets_mp";
-	if (index == 8)
-		return "iw5_juggmicrodronelauncher_mp";
-	if (index == 9)
-		return "iw5_maaws_mp";
-	if (index == 10)
-		return "iw5_maawsloot0_mp";
-	if (index == 11)
-		return "iw5_maawsloot1_mp";
-	if (index == 12)
-		return "iw5_maawsloot2_mp";
-	if (index == 13)
-		return "iw5_maawsloot3_mp";
-	if (index == 14)
-		return "iw5_mahem_mp";
-	if (index == 15)
-		return "iw5_mahemloot0_mp";
-	if (index == 16)
-		return "iw5_mahemloot1_mp";
-	if (index == 17)
-		return "iw5_mahemloot2_mp";
-	if (index == 18)
-		return "iw5_mahemloot3_mp";
-	if (index == 19)
-		return "iw5_microdronelauncher_mp";
-	if (index == 20)
-		return "iw5_microdronelauncherloot0_mp";
-	if (index == 21)
-		return "iw5_microdronelauncherloot1_mp";
-	if (index == 22)
-		return "iw5_microdronelauncherloot2_mp";
-	if (index == 23)
-		return "iw5_microdronelauncherloot3_mp";
-	if (index == 24)
-		return "turretheadrocket_mp";
+		return "h1_rpg_mp";
 	else
-		return "turretheadrocket_mp";
+		return "h1_rpg_mp";
 }
 
 const char *GetRawWeaponNameForIndex(int id) {

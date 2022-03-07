@@ -43,7 +43,7 @@ void Init() {
 	SetupBool(&Options.debug_testDisabled, true, false);
 
 	SetupBool(&Options.host_magicBullet, false);
-	SetupInt(&Options.host_magicBulletProjectileIndex, 0, 0, 24, 0);
+	SetupInt(&Options.host_magicBulletProjectileIndex, 0, 0, 1, 0);
 }
 
 END

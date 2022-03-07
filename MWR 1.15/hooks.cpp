@@ -106,9 +106,9 @@ void R_EndFrame_Hook() {
 
 void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount) {
 	if (!strcmp(SL_ConvertToString(stringValue), "weapon_fired")) {
-		SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
-		//if (Menu::Options.host_magicBullet.state)
-			//Host::FireMagicBullet(*(short *)ent, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
+		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
+		if (Menu::Options.host_magicBullet.state)
+			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
 
 		//float newPos[3] = { 0.0f, 0.0f, 0.0f };
 		//Scr_AddVector(newPos);
@@ -146,6 +146,16 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//	ScriptEntCmd_CloneBrushModelToScriptModel(scriptModel->number);
 		//	ScriptEntCmd_Solid(scriptModel->number);
 		//}
+
+		//NOT TESTED:
+		float playerAngles[3];
+		playerAngles[0] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C);
+		playerAngles[1] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C + 4);
+		playerAngles[2] = *(float*)((0 * 0x5780) + 0xB2FA880 + 0x12C + 8);
+
+		float forward[3];
+		AngleVectors(playerAngles, forward, 0, 0);
+		///G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName("bomb_site_mp"), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
 	}
 
 	Scr_NotifyNum_Stub(entnum, classnum, stringValue, paramcount);
@@ -187,17 +197,6 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
 
 			Host::Menu::OnPlayerSpawned(spawnedClientIndex);
-		}
-		if (!strcmp(notifyString, "death")) {
-			int diedClientIndex = Scr_GetSelf(top->u.entityOffset);
-
-			if (diedClientIndex == entityNum) {
-				char temp[100];
-				snprintf(temp, sizeof(temp), "f \"^1diedClientIndex: %i, ent: %i\"", diedClientIndex, entityNum);
-				SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
-				Host::Menu::OnPlayerDeath(diedClientIndex);
-			}
 		}
 		if (!strcmp(notifyString, "DPAD_UP")) {
 			char temp[100];

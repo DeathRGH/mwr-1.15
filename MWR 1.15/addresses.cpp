@@ -5,7 +5,7 @@ NAMESPACE(Functions)
 void Init() {
 	AddBaseDrawTextCmd = (AddBaseDrawTextCmd_t)0x0000000000DC0220;
 
-	//AngleVectors = (AngleVectors_t)0x0000000000921200;
+	AngleVectors = (AngleVectors_t)0x0000000000CBCFB0;
 
 	CG_DrawRotatedPic = (CG_DrawRotatedPic_t)0x00000000008D97D0;
 	CG_DrawRotatedPicPhysical = (CG_DrawRotatedPicPhysical_t)0x00000000008D92D0;
@@ -14,11 +14,13 @@ void Init() {
 	
 	DB_FindXAssetHeader = (DB_FindXAssetHeader_t)0x00000000009B6590;
 	
+	G_Damage = (G_Damage_t)0x0000000000A5ECE0;
 	//G_DObjGetWorldTagPos = (G_DObjGetWorldTagPos_t)0x000000000076B250;
 	G_FindConfigstringIndex = (G_FindConfigstringIndex_t)0x00000000004F8650;
 	G_FreeEntity = (G_FreeEntity_t)0x0000000000AFBBE0;
 	//G_GetAngles = (G_GetAngles_t)0x000000000076C310;
 	//G_GetPlayerViewOrigin = (G_GetPlayerViewOrigin_t)0x0000000000708BB0;
+	G_GetWeaponForName = (G_GetWeaponForName_t)0x0000000000B05600;
 	//G_LocationalTrace = (G_LocationalTrace_t)0x0000000000726550;
 	//G_ModelName = (G_ModelName_t)0x000000000043C510;
 	//G_SetAngle = (G_SetAngle_t)0x000000000076C230;
@@ -56,8 +58,8 @@ void Init() {
 	
 	Scr_AddEntityNum = (Scr_AddEntityNum_t)0x0000000000BE3F50;
 	Scr_AddString = (Scr_AddString_t)0x0000000000BE41E0;
-	//Scr_AddVector = (Scr_AddVector_t)0x0000000000854CE0;
-	//Scr_MagicBullet = (Scr_MagicBullet_t)0x000000000073BBB0;
+	Scr_AddVector = (Scr_AddVector_t)0x0000000000BE4380;
+	Scr_MagicBullet = (Scr_MagicBullet_t)0x0000000000AA47E0;
 
 	ScriptEntCmd_CloneBrushModelToScriptModel = (ScriptEntCmd_CloneBrushModelToScriptModel_t)0x0000000000AEFE40;
 	ScriptEntCmd_ScriptModelPlayAnim = (ScriptEntCmd_ScriptModelPlayAnim_t)0x0000000000AF0090;

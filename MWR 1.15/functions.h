@@ -16,12 +16,14 @@ typedef void(*Cmd_TokenizeStringKernel_t)(const char *text_in, int max_tokens, C
 
 typedef uint64_t(*DB_FindXAssetHeader_t)(XAssetType type, const char *name, int allowCreateDefault);
 
+typedef void(*G_Damage_t)(gentity_s *targ, const gentity_s *inflictor, gentity_s *attacker, const float *dir, const float *point, int damage, int dFlags, int mod, Weapon weapon, bool u1, int u2, hitLocation_t hitLoc, unsigned int modelIndex, scr_string_t partName, int timeOffset);
 typedef int(*G_DObjGetWorldTagPos_t)(const gentity_s *ent, scr_string_t tagName, float *pos);
 typedef int(*G_FindConfigstringIndex_t)(const char *name, ConfigString start, unsigned int max, int create, const char *errormsg);
 typedef void(*G_FreeEntity_t)(gentity_s *ed);
 typedef void(*G_GetAngles_t)(LocalClientNum_t localClientNum, short entIndex, float *outAngles);
 typedef void(*G_GetOrigin_t)(LocalClientNum_t localClientNum, short entIndex, float *outPosition);
 typedef void(*G_GetPlayerViewOrigin_t)(const playerState_s *ps, float *origin);
+typedef Weapon(*G_GetWeaponForName_t)(const char* name);
 typedef void(*G_LocationalTrace_t)(/*trace_t **/void *results, const float *start, const float *end, short passEntityNum, int contentmask, unsigned char *priorityMap);
 typedef unsigned int(*G_ModelName_t)(int index);
 typedef void(*G_SetAngle_t)(gentity_s *ent, const float *angle);
@@ -91,12 +93,14 @@ extern Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 extern DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
+extern G_Damage_t G_Damage;
 extern G_DObjGetWorldTagPos_t G_DObjGetWorldTagPos;
 extern G_FindConfigstringIndex_t G_FindConfigstringIndex;
 extern G_FreeEntity_t G_FreeEntity;
 extern G_GetAngles_t G_GetAngles;
 extern G_GetOrigin_t G_GetOrigin;
 extern G_GetPlayerViewOrigin_t G_GetPlayerViewOrigin;
+extern G_GetWeaponForName_t G_GetWeaponForName;
 extern G_LocationalTrace_t G_LocationalTrace;
 extern G_ModelName_t G_ModelName;
 extern G_SetAngle_t G_SetAngle;

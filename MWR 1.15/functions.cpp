@@ -13,12 +13,14 @@ Cmd_TokenizeStringKernel_t Cmd_TokenizeStringKernel;
 
 DB_FindXAssetHeader_t DB_FindXAssetHeader;
 
+G_Damage_t G_Damage;
 G_DObjGetWorldTagPos_t G_DObjGetWorldTagPos;
 G_FindConfigstringIndex_t G_FindConfigstringIndex;
 G_FreeEntity_t G_FreeEntity;
 G_GetAngles_t G_GetAngles;
 G_GetOrigin_t G_GetOrigin;
 G_GetPlayerViewOrigin_t G_GetPlayerViewOrigin;
+G_GetWeaponForName_t G_GetWeaponForName;
 G_LocationalTrace_t G_LocationalTrace;
 G_ModelName_t G_ModelName;
 G_SetAngle_t G_SetAngle;
