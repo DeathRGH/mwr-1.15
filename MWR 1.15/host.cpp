@@ -62,7 +62,7 @@ void FireMagicBullet(short entNum, const char *projectile) {
 	Scr_MagicBullet();
 }
 
-int BulletTrace(float *start, float *end, unsigned short *entityId) {
+int BulletTrace(float *start, float *end, unsigned short *entityId) { //NOT UPDATED
 	char trace[0x200];//trace_t *trace;
 	G_LocationalTrace(trace, start, end, 0, 0x280E831, 0);
 
@@ -81,11 +81,11 @@ int BulletTrace(float *start, float *end, unsigned short *entityId) {
 
 NAMESPACE(Lobby)
 
-void Godmode(bool state) {
+void Godmode(bool state) { //NOT UPDATED
 	memcpy((void *)0x00000000007138BA, state ? "\x90\x90\x90\x90\x90\x90\x90" : "\x45\x29\xA7\xD0\x01\x00\x00", 7);
 }
 
-void InfiniteAmmo(bool state) {
+void InfiniteAmmo(bool state) { //NOT UPDATED
 	memcpy((void *)0x00000000005768EF, state ? "\x90\x90\x90\x90\x90" : "\x44\x29\x7C\x81\x08", 5);
 }
 
@@ -225,7 +225,7 @@ NAMESPACE(Forge)
 
 gentity_s *clientCurrentEntity[MAX_MENU_CLIENTS];
 
-void MoveEntity(gentity_s *player, gentity_s *ent) {
+void MoveEntity(gentity_s *player, gentity_s *ent) { //NOT UPDATED
 	float playerAngles[3];
 	playerAngles[0] = player->angles[0];
 	playerAngles[1] = player->angles[1];
@@ -250,7 +250,7 @@ void MoveEntity(gentity_s *player, gentity_s *ent) {
 	SV_LinkEntity(ent);
 }
 
-void DeleteEntity(gentity_s *player) {
+void DeleteEntity(gentity_s *player) { //NOT UPDATED
 	float playerAngles[3];
 	playerAngles[0] = player->angles[0];
 	playerAngles[1] = player->angles[1];
@@ -275,7 +275,7 @@ void DeleteEntity(gentity_s *player) {
 	}
 }
 
-void PickupEntity(gentity_s *player) {
+void PickupEntity(gentity_s *player) { //NOT UPDATED
 	float playerAngles[3];
 	playerAngles[0] = player->angles[0];
 	playerAngles[1] = player->angles[1];
@@ -298,7 +298,7 @@ void PickupEntity(gentity_s *player) {
 		clientCurrentEntity[player->number] = Entity::GetEntityPtr(entityId);
 }
 
-void MoveForgeEntities() {
+void MoveForgeEntities() { //NOT UPDATED
 	uartprintf("[MWR 1.15] MoveForgeEntities() -> THREAD STARTED!\n");
 	while (ShouldRun()) {
 		if (!Cache::Game.inGame) {
