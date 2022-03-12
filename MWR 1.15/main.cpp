@@ -144,6 +144,10 @@ void DetectGame() {
 		//GScr_MapRestart();
 
 		Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 90");
+		scr_string_t cinematic = SL_GetString("default", 0);
+		char temp[100];
+		snprintf(temp, sizeof(temp), "9 \"%i\" 0", (int)cinematic);
+		SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 	}
 	else {
 		sceSysUtilSendSystemNotificationWithText(222, "Welcome to MWR 1.15");

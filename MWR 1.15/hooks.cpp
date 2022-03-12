@@ -114,8 +114,8 @@ void R_EndFrame_Hook() { //NOT UPDATED
 void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount) {
 	if (!strcmp(SL_ConvertToString(stringValue), "weapon_fired")) {
 		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
-		if (Menu::Options.host_magicBullet.state)
-			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
+		if (Host::Menu::Menu[entnum].magicBullet)
+			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Host::Menu::Menu[entnum].magicBulletIndex));
 
 		//float newPos[3] = { 0.0f, 0.0f, 0.0f };
 		//Scr_AddVector(newPos);
@@ -154,7 +154,7 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//	ScriptEntCmd_Solid(scriptModel->number);
 		//}
 
-		if (Menu::Options.host_unfairAimbot.state) {
+		if (Host::Menu::Menu[entnum].unfairAimbot) {
 			float playerAngles[3];
 			playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
 			playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
@@ -162,7 +162,7 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 
 			float forward[3];
 			AngleVectors(playerAngles, forward, 0, 0);
-			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(entnum), Host::Entity::GetEntityPtr(entnum), forward, playerAngles, 100000, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, Host::Menu::Menu[entnum].aimbotUseHeadhsots ? hitLocation_t::HITLOC_HEAD : hitLocation_t::HITLOC_TORSO_UPR, 0, 84, 0);
 		}
 	}
 
@@ -187,17 +187,15 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
+			Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BTN_X");
+			Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BTN_SQUARE");
 			Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
-			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
-			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
 
 			Host::Menu::OnPlayerSpawned(spawnedClientIndex);
 		}
 		if (!strcmp(notifyString, "DPAD_UP")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_UP\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+			Host::Menu::ScrollUp(entityNum);
 
 			//float pos[3] = { 0.0f, 0.0f, 1000000.0f };
 			//gentity_s *ent = Host::Entity::SpawnScriptModel("com_plasticcase_green_big_us_dirt", pos);
@@ -207,14 +205,18 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//Host::Forge::clientCurrentEntity[entityNum] = ent;
 		}
 		if (!strcmp(notifyString, "DPAD_DOWN")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_DOWN\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+			Host::Menu::ScrollDown(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				Host::Forge::clientCurrentEntity[entityNum] = 0;
 			else
 				Host::Forge::PickupEntity(Host::Entity::GetEntityPtr(entityNum))*/;
+		}
+		if (!strcmp(notifyString, "BTN_X")) {
+			Host::Menu::Select(entityNum);
+		}
+		if (!strcmp(notifyString, "BTN_SQUARE")) {
+			Host::Menu::GoBack(entityNum);
 		}
 		if (!strcmp(notifyString, "DPAD_LEFT")) {
 			char temp[100];
@@ -222,10 +224,6 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 		}
 		if (!strcmp(notifyString, "DPAD_RIGHT")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_RIGHT\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
 			Host::Menu::OpenCloseMenu(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)

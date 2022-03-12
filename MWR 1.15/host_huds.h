@@ -24,7 +24,7 @@ struct hudelem_s {
 	float z;					//0x18
 	int type;					//0x1C
 	float fontScale;			//0x20
-	int fromFontScale;			//0x24
+	float fromFontScale;		//0x24
 	int fontScaleStartTime;		//0x28
 	int fontScaleTime;			//0x2C
 	hudelem_color_t color;		//0x30
@@ -83,6 +83,7 @@ struct Hud {
 	void SetY(float y);
 	void ChangeText(const char *text);
 	void ScaleOverTime(float time, float width, float height);
+	void ScaleTextOverTime(float time, float fontSize);
 	void FadeOverTime(int time, float red, float green, float blue, float alpha);
 	void SetColor(char r, char g, char b, char a, bool isGlow);
 	void TypeWriterText(const char *text);

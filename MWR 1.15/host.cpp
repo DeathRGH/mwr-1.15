@@ -79,6 +79,12 @@ int BulletTrace(float *start, float *end, unsigned short *entityId) { //NOT UPDA
 	return 0;
 }
 
+int ClosestClient(int i) {
+	//check is alive
+	//loop all clients
+	//get shortest distance
+}
+
 NAMESPACE(Lobby)
 
 void Godmode(bool state) { //NOT UPDATED
@@ -187,21 +193,129 @@ const char *GetModelNameFromEntity(gentity_s *ent) {
 END
 NAMESPACE(Menu)
 
+MenuStruct Menu[MAX_MENU_CLIENTS];
+
 bool menuOpen[MAX_MENU_CLIENTS];
+int menuScroll[MAX_MENU_CLIENTS];
+int menuSize[MAX_MENU_CLIENTS];
+hostSub menuSub[MAX_MENU_CLIENTS];
+int menuDepth[MAX_MENU_CLIENTS];
+hostSub menuLastSub[MAX_MENU_CLIENTS][MAX_MENU_DEPTH];
+char menuText[MAX_MENU_CLIENTS][MAX_MENU_OPTIONS][128];
 
 game_hudelem_s *background[MAX_MENU_CLIENTS];
 game_hudelem_s *header[MAX_MENU_CLIENTS];
-game_hudelem_s *options[MAX_MENU_CLIENTS][10];
+game_hudelem_s *options[MAX_MENU_CLIENTS][MAX_MENU_OPTIONS];
+
+void UpdateMenu(int i, hostSub subMenu, int maxScroll, const char *headerText, ...) {
+	if (menuSub[i] != subMenu) {
+		if (subMenu == hostSub::SUB_NONE)
+			menuDepth[i] = 0;
+		else {
+			menuLastSub[i][menuDepth[i]] = menuSub[i];
+
+			if (menuDepth[i] > 1) {
+				if (menuLastSub[i][menuDepth[i] - 1] == subMenu)
+					menuDepth[i]--;
+				else
+					menuDepth[i]++;
+			}
+			else
+				menuDepth[i]++;
+		}
+	}
+
+	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+		strcpy(menuText[i][j], "");
+
+	va_list list;
+	va_start(list, maxScroll);
+	for (int j = 0; j < maxScroll; j++) {
+		char *temp = va_arg(list, char *);
+		strcpy(menuText[i][j], temp);
+	}
+	va_end(list);
+
+	menuSub[i] = subMenu;
+	menuSize[i] = maxScroll;
+	Hud(header[i]).ChangeText(headerText);
+
+	Hud(options[i][menuScroll[i]]).ScaleTextOverTime(0, 0.5f);
+	Hud(options[i][menuScroll[i]]).FadeOverTime(0, 255, 255, 255, 255);
+	menuScroll[i] = 0;
+	Hud(options[i][0]).ScaleTextOverTime(100, 0.6f);
+	Hud(options[i][0]).FadeOverTime(250, 255, 0, 0, 255);
+
+	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+		Hud(options[i][j]).ChangeText(menuText[i][j]);
+
+	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+		Hud(options[i][j]).MoveOverTime(0, 1000.0f, 100.0f + (j * 15.0f));
+	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+		Hud(options[i][j]).MoveOverTime(250 + (j * 50), 600.0f, 100.0f + (j * 15.0f));
+}
+
+void SwitchToMainMenu(int i) {
+	UpdateMenu(i, hostSub::SUB_NONE, 12, "MWR 1.15", "Self Menu", "Lobby Menu", "Weapon Menu", "Clients", "All Clients", "Teleport Menu", "Aimbot Menu", "Projectile Menu", "Sub Menu 9", "Sub Menu 10", "Sub Menu 11", "Sub Menu 12");
+}
+
+void SwitchMenu(int i, hostSub subMenu) {
+	switch (subMenu) {
+		case hostSub::SUB_NONE:
+			SwitchToMainMenu(i);
+			break;
+		case hostSub::SUB_SELF:
+			UpdateMenu(i, hostSub::SUB_SELF, 3, "Self Menu", "Godmode", "Infinite Ammo", "2x Movement Speed");
+			break;
+		case hostSub::SUB_LOBBY:
+			UpdateMenu(i, hostSub::SUB_LOBBY, 8, "Lobby Menu", "Godmode", "Infinite Ammo", "Super Jump", "Add Friendly Bot", "Remove Friendly Bot", "Add Enemy Bot", "Remove Enemy Bot", "Restart Game");
+			break;
+		case hostSub::SUB_WEAPONS:
+			UpdateMenu(i, hostSub::SUB_WEAPONS, 5, "Weapon Menu", "h1_ak47_mp", "h1_fal_mp", "h1_pp2000_mp", "h1_striker_mp", "h1_deserteagle55_mp");
+			break;
+		case hostSub::SUB_CLIENTS:
+			UpdateMenu(i, hostSub::SUB_CLIENTS, 4, "Clients Menu", "Client 0", "Client 1", "Client 2", "Client 3");
+			break;
+		case hostSub::SUB_ALLCLIENTS:
+			UpdateMenu(i, hostSub::SUB_ALLCLIENTS, 4, "All CLients", "Unverify All", "Verify All", "All Client Godmode", "All Client Infinite Ammo");
+			break;
+		case hostSub::SUB_TELEPORT:
+			UpdateMenu(i, hostSub::SUB_TELEPORT, 7, "Teleport Menu", "Print Coordinates", "Save Position", "Load Position", "Teleport Up 100", "Teleport Up 1000", "Teleport Down 1000", "Teleport Down 100");
+			break;
+		case hostSub::SUB_AIMBOT:
+			UpdateMenu(i, hostSub::SUB_AIMBOT, 2, "Aimbot Menu", "Unfair Aimbot", "Headshots");
+			break;
+		case hostSub::SUB_PROJECTILE:
+			UpdateMenu(i, hostSub::SUB_PROJECTILE, 2, "Projectile Menu", "Magic Bullet", "Set RPG");
+			break;
+		default:
+			break;
+	}
+}
 
 void OnPlayerSpawned(int i) {
 	menuOpen[i] = true;
+	menuScroll[i] = 0;
+	menuSub[i] = hostSub::SUB_NONE;
+	menuDepth[i] = 0;
+	for (int j = 0; j < 5; j++)
+		menuLastSub[i][j] = hostSub::SUB_NONE;
+
 	HudElem_DestroyClient(i);
 
 	background[i] = PrecacheElem(i);
-	header[i] = PrecacheElem(i);
+	Hud(background[i]).SetShader("white", 200, 1000, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
 
-	Hud(background[i]).SetShader("white", 200, 300, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
+	header[i] = PrecacheElem(i);
 	Hud(header[i]).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
+
+	for (int j = 0; j < MAX_MENU_OPTIONS; j++) {
+		options[i][j] = PrecacheElem(i);
+		Hud(options[i][j]).SetText("Option", 1, 0.5f, 600.0f, 100.0f + (j * 15.0f), 5, 0, 10.0f, 255, 255, 255, 255, 0, 0, 0, 0);
+	}
+	Hud(options[i][0]).SetText("Option", 1, 0.6f, 600.0f, 100.0f, 5, 0, 10.0f, 255, 0, 0, 255, 0, 0, 0, 0);
+
+	SwitchToMainMenu(i);
 }
 
 void OpenCloseMenu(int i) {
@@ -211,13 +325,193 @@ void OpenCloseMenu(int i) {
 	if (menuOpen[i]) {
 		Hud(background[i]).MoveOverTime(250, 1000.0f, 200.0f);
 		Hud(header[i]).MoveOverTime(250, 1000.0f, 70.0f);
+		for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+			Hud(options[i][j]).MoveOverTime(250, 1000.0f, 100.0f + (j * 15.0f));
 	}
 	else {
 		Hud(background[i]).MoveOverTime(250, 600.0f, 200.0f);
 		Hud(header[i]).MoveOverTime(250, 600.0f, 70.0f);
+		for (int j = 0; j < MAX_MENU_OPTIONS; j++)
+			Hud(options[i][j]).MoveOverTime(250 + (j * 50), 600.0f, 100.0f + (j * 15.0f));
 	}
 
 	menuOpen[i] = !menuOpen[i];
+}
+
+void ScrollUp(int i) {
+	if (!menuOpen[i] || !options[i][0])
+		return;
+
+	if (menuScroll[i] > -1) {
+		menuScroll[i]--;
+		Hud(options[i][menuScroll[i] + 1]).ScaleTextOverTime(100, 0.5f);
+		Hud(options[i][menuScroll[i] + 1]).FadeOverTime(250, 255, 255, 255, 255);
+	}
+	if (menuScroll[i] == -1) {
+		menuScroll[i] = menuSize[i] - 1;
+		Hud(options[i][0]).ScaleTextOverTime(100, 0.5f);
+		Hud(options[i][0]).FadeOverTime(250, 255, 255, 255, 255);
+	}
+	Hud(options[i][menuScroll[i]]).ScaleTextOverTime(100, 0.6f);
+	Hud(options[i][menuScroll[i]]).FadeOverTime(250, 255, 0, 0, 255);
+}
+
+void ScrollDown(int i) {
+	if (!menuOpen[i] || !options[i][0])
+		return;
+
+	if (menuScroll[i] < menuSize[i]) {
+		menuScroll[i]++;
+		Hud(options[i][menuScroll[i] - 1]).ScaleTextOverTime(100, 0.5f);
+		Hud(options[i][menuScroll[i] - 1]).FadeOverTime(250, 255, 255, 255, 255);
+	}
+	if (menuScroll[i] == menuSize[i]) {
+		menuScroll[i] = 0;
+		Hud(options[i][MAX_MENU_OPTIONS - 1]).ScaleTextOverTime(100, 0.5f);
+		Hud(options[i][MAX_MENU_OPTIONS - 1]).FadeOverTime(250, 255, 255, 255, 255);
+	}
+	Hud(options[i][menuScroll[i]]).ScaleTextOverTime(100, 0.6f);
+	Hud(options[i][menuScroll[i]]).FadeOverTime(250, 255, 0, 0, 255);
+}
+
+void Select(int i) {
+	if (!menuOpen[i])
+		return;
+
+	switch (menuSub[i]) {
+	case hostSub::SUB_NONE:
+		switch (menuScroll[i]) {
+		case 0:
+			SwitchMenu(i, hostSub::SUB_SELF);
+			break;
+		case 1:
+			SwitchMenu(i, hostSub::SUB_LOBBY);
+			break;
+		case 2:
+			SwitchMenu(i, hostSub::SUB_WEAPONS);
+			break;
+		case 3:
+			SwitchMenu(i, hostSub::SUB_CLIENTS);
+			break;
+		case 4:
+			SwitchMenu(i, hostSub::SUB_ALLCLIENTS);
+			break;
+		case 5:
+			SwitchMenu(i, hostSub::SUB_TELEPORT);
+			break;
+		case 6:
+			SwitchMenu(i, hostSub::SUB_AIMBOT);
+			break;
+		case 7:
+			SwitchMenu(i, hostSub::SUB_PROJECTILE);
+			break;
+		default:
+			break;
+		}
+		break;
+	case hostSub::SUB_SELF:
+		switch (menuScroll[i]) {
+		case 0:
+			//Godmode
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 1:
+			//Infinite Ammo
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 2:
+			//2x Movement Speed
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		default:
+			break;
+		}
+		break;
+	case hostSub::SUB_LOBBY:
+		switch (menuScroll[i]) {
+		case 0:
+			//Lobby Godmode
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 1:
+			//Lobby Infinite Ammo
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 2:
+			//Super Jump
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 3:
+			AddFriendlyBot();
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^2Friendly ^7Bot Added\"");
+			break;
+		case 4:
+			RemoveFriendlyBot();
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^2Friendly ^7Bot Removed\"");
+			break;
+		case 5:
+			AddEnemyBot();
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Enemy ^7Bot Added\"");
+			break;
+		case 6:
+			RemoveEnemyBot();
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Enemy ^7Bot Removed\"");
+			break;
+		case 7:
+			GScr_MapRestart();
+			break;
+		default:
+			break;
+		}
+		break;
+	case hostSub::SUB_WEAPONS:
+		break;
+	case hostSub::SUB_CLIENTS:
+		break;
+	case hostSub::SUB_ALLCLIENTS:
+		break;
+	case hostSub::SUB_TELEPORT:
+		break;
+	case hostSub::SUB_AIMBOT:
+		switch (menuScroll[i]) {
+		case 0:
+			Menu[i].unfairAimbot = !Menu[i].unfairAimbot;
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].unfairAimbot ? "c \"Unfair Aimbot [^2ON^7]\"" : "c \"Unfair Aimbot [^1OFF^7]\"");
+			break;
+		case 1:
+			Menu[i].aimbotUseHeadhsots = !Menu[i].aimbotUseHeadhsots;
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].aimbotUseHeadhsots ? "c \"Aimbot Headshot [^2ON^7]\"" : "c \"Aimbot Headshot [^1OFF^7]\"");
+			break;
+		default:
+			break;
+		}
+		break;
+	case hostSub::SUB_PROJECTILE:
+		switch (menuScroll[i]) {
+		case 0:
+			Menu[i].magicBullet = !Menu[i].magicBullet;
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].magicBullet ? "c \"Magic Bullet [^2ON^7]\"" : "c \"Magic Bullet [^1OFF^7]\"");
+			break;
+		case 1:
+			Menu[i].magicBulletIndex = 0;
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"Bullet Type: ^2RPG\"");
+			break;
+		default:
+			break;
+		}
+		break;
+		break;
+	default:
+		break;
+	}
+}
+
+void GoBack(int i) {
+	if (!menuOpen[i] || menuSub[i] == hostSub::SUB_NONE)
+		return;
+
+	if (menuDepth[i] > 0)
+		SwitchMenu(i, menuLastSub[i][menuDepth[i] - 1]);
 }
 
 END
