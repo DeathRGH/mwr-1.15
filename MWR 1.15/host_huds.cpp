@@ -83,6 +83,13 @@ void Hud::ScaleOverTime(float time, float width, float height) {
 	element->elem.height = height;
 }
 
+void Hud::ScaleTextOverTime(float time, float fontSize) {
+	element->elem.fromFontScale = element->elem.fontScale;
+	element->elem.fontScaleStartTime = Leveltime;
+	element->elem.fontScaleTime = time;
+	element->elem.fontScale = fontSize;
+}
+
 void Hud::FadeOverTime(int time, float red, float green, float blue, float alpha) {
 	element->elem.fromColor = element->elem.color;
 	element->elem.fadeStartTime = Leveltime;

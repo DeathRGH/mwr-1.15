@@ -42,10 +42,10 @@ void Init() {
 	SetupBool(&Options.debug_test2, false);
 	SetupBool(&Options.debug_testDisabled, true, false);
 
-	SetupBool(&Options.host_magicBullet, false);
-	SetupInt(&Options.host_magicBulletProjectileIndex, 0, 0, 1, 0);
-	SetupBool(&Options.host_unfairAimbot, false);
-	SetupInt(&Options.host_unfairAimbotWeaponIndex, 0, 0, 106, 0);
+	SetupBool(&Options.host_magicBullet, false, false);
+	SetupInt(&Options.host_magicBulletProjectileIndex, 0, 0, 1, 0, 1, false);
+	SetupBool(&Options.host_unfairAimbot, false, false);
+	SetupInt(&Options.host_unfairAimbotWeaponIndex, 0, 0, 106, 0, 1, false);
 }
 
 END

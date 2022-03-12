@@ -42,18 +42,6 @@ void RgbThread() {
 	uartprintf("[MWR 1.15] RgbThread() -> THREAD ENDED!\n");
 }
 
-void TestAllClientHuds() {
-	HudElem_DestroyAll();
-	game_hudelem_s *testTypewriter = Host::PrecacheElem(0x7FF);
-	game_hudelem_s *testText = Host::PrecacheElem(0x7FF);
-	game_hudelem_s *testHud = Host::PrecacheElem(0x7FF);
-
-	Host::Hud(testTypewriter).SetText("AAAAAA ", 1, 0.5f, 200.0f, 0.0f, 0, 0, 10.0f, 255, 255, 255, 255, 0, 127, 0, 255);
-	Host::Hud(testTypewriter).TypeWriterText("AAAAAA Typewriter text on MWR 1.15");
-	Host::Hud(testText).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
-	Host::Hud(testHud).SetShader("white", 200, 300, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
-}
-
 void DetectGame() {
 	if (!strcmp((char *)0x0000000000FA57FE, "multiplayer")) {
 		executionAddress = 0x0000000001047FF0;
@@ -78,8 +66,6 @@ void DetectGame() {
 
 		Functions::Init();
 		Menu::Init();
-
-		//TestAllClientHuds();
 
 		//memcpy((void *)0x0000000000A34E36, "\x90\x90\x90\x90\x90\x90", 6); //patch G_SetClientContents in ClientEndFrame
 		//after this set g_client + 0x02
@@ -123,13 +109,14 @@ void DetectGame() {
 		//possible hook 00000000007E3D50 LUIElement_Render
 		//CG_Draw2D -> LUI_CoD_RunFrame -> LUI_CoD_Render -> LUI_Render -> LUIElement_Render
 
-		//restore LUI_CoD_Render
-		///memcpy((void *)0x00000000004F01B0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x54\x53\x41\x89\xF6\x41\x89\xFF", 17);
-		///Hooks::LUI_CoD_Render_Stub = (Hooks::LUI_CoD_Render_t)DetourFunction(0x00000000004F01B0, (void *)Hooks::LUI_CoD_Render_Hook, 17);
-
-		//restore LUIElement_Render
-		///memcpy((void *)0x00000000004D6EC0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x81\xEC\xD8\x00\x00\x00", 20);
-		///Hooks::LUIElement_Render_Stub = (Hooks::LUIElement_Render_t)DetourFunction(0x00000000004D6EC0, (void *)Hooks::LUIElement_Render_Hook, 20);
+		// experimental hook for dumping raw/script files
+		// all raw files are compressed with zlib 1.1.4
+		// fast files are not compressed, only the inner files
+		//
+		///syscall(136, "/data/dump", 0777); //mkdir
+		//restore db_inflate
+		///memcpy((void *)0x0000000000E2F090, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x50\x48\x89\xFB", 17);
+		///Hooks::db_inflate_Stub = (Hooks::db_inflate_t)DetourFunction(0x0000000000E2F090, (void *)Hooks::db_inflate_Hook, 17);
 		
 		//restore Scr_NotifyNum
 		memcpy((void *)0x0000000000BE21D0, "\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x83\xEC\x18", 17);
@@ -154,15 +141,13 @@ void DetectGame() {
 		///PrintLoadedZones();
 		///uartprintf("[MWR 1.15] %s", Host::Entity::GetModelNameFromEntity(0));
 
-		///float pos[3];
-		///G_GetOrigin(LocalClientNum_t::LOCAL_CLIENT_0, 0, pos);
-		///Host::Entity::SpawnScriptModel("dyn_ven_banners_tube_01_intct", pos);
-
 		//GScr_MapRestart();
 
 		Cbuf_AddText(LocalClientNum_t::LOCAL_CLIENT_0, "cg_fov 90");
-
-		//TestAllClientHuds();
+		scr_string_t cinematic = SL_GetString("default", 0);
+		char temp[100];
+		snprintf(temp, sizeof(temp), "9 \"%i\" 0", (int)cinematic);
+		SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 	}
 	else {
 		sceSysUtilSendSystemNotificationWithText(222, "Welcome to MWR 1.15");

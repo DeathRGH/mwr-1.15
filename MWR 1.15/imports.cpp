@@ -74,6 +74,7 @@ char *(*strncpy)(char *destination, const char *source, size_t num);
 char *(*strcat)(char *dest, const char *src);
 char *(*strncat)(char *dest, const char *src, size_t n);
 size_t (*strlen)(const char *s);
+char *(*strtok)(char *str, const char *delimiters);
 int (*strcmp)(const char *s1, const char *s2);
 int (*strncmp)(const char *s1, const char *s2, size_t n);
 int (*sprintf)(char *str, const char *format, ...);
@@ -204,6 +205,7 @@ void initImports() {
 	sys_dynlib_dlsym(h, "strcat", &strcat);
 	sys_dynlib_dlsym(h, "strncat", &strncat);
 	sys_dynlib_dlsym(h, "strlen", &strlen);
+	sys_dynlib_dlsym(h, "strtok", &strtok);
 	sys_dynlib_dlsym(h, "strcmp", &strcmp);
 	sys_dynlib_dlsym(h, "strncmp", &strncmp);
 	sys_dynlib_dlsym(h, "sprintf", &sprintf);

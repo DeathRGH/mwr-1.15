@@ -466,6 +466,7 @@ extern char *(*strncpy)(char *destination, const char *source, size_t num);
 extern char *(*strcat)(char *dest, const char *src);
 extern char *(*strncat)(char *dest, const char *src, size_t n);
 extern size_t (*strlen)(const char *s);
+extern char *(*strtok)(char *str, const char *delimiters);
 extern int (*strcmp)(const char *s1, const char *s2);
 extern int (*strncmp)(const char *s1, const char *s2, size_t n);
 extern int (*sprintf)(char *str, const char *format, ...);
@@ -491,6 +492,16 @@ extern double (*pow)(double x, double y);
 extern int (*abs)(int n);
 extern double (*fmin)(double x, double y);
 extern double (*fmax)(double x, double y);
+
+#define O_RDONLY	0x0000
+#define O_WRONLY	0x0001
+#define O_RDWR		0x0002
+#define O_ACCMODE	0x0003
+#define O_NONBLOCK	0x0004	// no delay
+#define O_APPEND	0x0008	// set append mode
+#define O_CREAT		0x0200	// create if nonexistent
+#define O_TRUNC		0x0400	// truncate to zero length
+#define O_EXCL		0x0800	// error if already exists
 
 int getpid();
 void *sys_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);

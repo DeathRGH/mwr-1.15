@@ -15,6 +15,8 @@ void FireMagicBullet(short entNum, const char *projectile);
 
 int BulletTrace(float *start, float *end, unsigned short *entityId);
 
+int ClosestClient(int i);
+
 NAMESPACE(Lobby)
 
 void Godmode(bool state);
@@ -36,16 +38,52 @@ const char *GetModelNameFromEntity(gentity_s *ent);
 END
 NAMESPACE(Menu)
 
+enum hostSub {
+	SUB_NONE,
+	SUB_SELF,
+	SUB_LOBBY,
+	SUB_WEAPONS,
+	SUB_CLIENTS,
+	SUB_ALLCLIENTS,
+	SUB_TELEPORT,
+	SUB_AIMBOT,
+	SUB_PROJECTILE
+};
+
 #define MAX_MENU_CLIENTS 18
+#define MAX_MENU_OPTIONS 12
+#define MAX_MENU_DEPTH 5
+
+struct MenuStruct {
+	bool unfairAimbot;
+	bool aimbotUseHeadhsots;
+	bool magicBullet;
+	int magicBulletIndex;
+};
+
+extern MenuStruct Menu[MAX_MENU_CLIENTS];
 
 extern bool menuOpen[MAX_MENU_CLIENTS];
+extern int menuScroll[MAX_MENU_CLIENTS];
+extern int menuSize[MAX_MENU_CLIENTS];
+extern hostSub menuSub[MAX_MENU_CLIENTS];
+extern int menuDepth[MAX_MENU_CLIENTS];
+extern hostSub menuLastSub[MAX_MENU_CLIENTS][MAX_MENU_DEPTH];
+extern char menuText[MAX_MENU_CLIENTS][MAX_MENU_OPTIONS][128];
 
 extern struct game_hudelem_s *background[MAX_MENU_CLIENTS];
 extern struct game_hudelem_s *header[MAX_MENU_CLIENTS];
-extern struct game_hudelem_s *options[MAX_MENU_CLIENTS][10];
+extern struct game_hudelem_s *options[MAX_MENU_CLIENTS][MAX_MENU_OPTIONS];
 
+void UpdateMenu(int i, hostSub subMenu, int maxScroll, const char *headerText, ...);
+void SwitchToMainMenu(int i);
+void SwitchMenu(int i, hostSub subMenu);
 void OnPlayerSpawned(int i);
 void OpenCloseMenu(int i);
+void ScrollUp(int i);
+void ScrollDown(int i);
+void Select(int i);
+void GoBack(int i);
 
 END
 NAMESPACE(Forge)

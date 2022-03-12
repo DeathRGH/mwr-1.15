@@ -15,9 +15,7 @@ NAMESPACE(Hooks)
 
 CG_Draw2D_t CG_Draw2D_Stub;
 
-LUI_CoD_Render_t LUI_CoD_Render_Stub;
-
-LUIElement_Render_t LUIElement_Render_Stub;
+db_inflate_t db_inflate_Stub;
 
 Scr_NotifyNum_t Scr_NotifyNum_Stub;
 
@@ -27,29 +25,54 @@ void CG_Draw2D_Hook(LocalClientNum_t localClientNum, float *rsi, float(*rdx)[3])
 	CG_Draw2D_Stub(localClientNum, rsi, rdx);
 
 	Menu::DrawMenu();
-
-	//DrawShader(1000.0f, 500.0f, 200.0f, 400.0f, black08);
-	//DrawText("MWR 1.15 Test Text DeathRGH", 1000.0f, 500.0f, 1.0f, white10);
 }
 
-typedef void(*LUI_Interface_DrawRectangle_t)(LUIElement *, float x, float y, float width, float height, float, float, float, float, float, float, float, Material *, float *, LUI_QuadRenderMode, bool, lua_State *);
-LUI_Interface_DrawRectangle_t LUI_Interface_DrawRectangle = (LUI_Interface_DrawRectangle_t)0x00000000004F2650;
+bool shouldWriteFile = false;
+void db_inflate_Hook(void *rdi, int esi) {
+	int fileHandle;
+	register uint64_t r15 asm("r15");
+	if (r15) {
+		//uartprintf("\ndb_inflate_Hook r15: 0x%llX\n", r15);
+		//uartprintf("db_inflate_Hook: %s\n", (char *)(*(uint64_t *)r15));
+		//uartprintf("db_inflate_Hook: packed: 0x%llX, final: 0x%llX\n", *(int *)(r15 + 0x08), *(int *)(r15 + 0x0C));
 
-typedef void(*LUI_Interface_DrawTextWithCursor_t)(LUIElement *, float, float, float, float, float, float, const char *, Font_s *, float, float, int, char, lua_State *);
-LUI_Interface_DrawTextWithCursor_t LUI_Interface_DrawTextWithCursor = (LUI_Interface_DrawTextWithCursor_t)0x00000000004F3560;
+		uint64_t strPtr = *(uint64_t *)r15;
 
-typedef void(*LUI_Interface_DrawBoundingBox_t)(LUIElement *, lua_State *);
-LUI_Interface_DrawBoundingBox_t LUI_Interface_DrawBoundingBox = (LUI_Interface_DrawBoundingBox_t)0x00000000004F2E90;
+		if (strPtr) {
+			char fullFileName[1000];
+			strcpy(fullFileName, (char *)(*(uint64_t *)r15));
+			uartprintf("[MWR 1.15] db_inflate: %s\n", fullFileName);
 
-void LUI_CoD_Render_Hook(LocalClientNum_t rdi, int rsi) {
-	LUI_CoD_Render_Stub(rdi, rsi);
+			char folderBuffer[1000];
+			strcpy(folderBuffer, "/data/dump");
 
-	//LUIElement *rootElem = LUI_GetRootElement("UIRootFull", lua_state);
-	//LUI_Interface_DrawLine(rootElem, 0.0f, 0.0f, 500.0f, 500.0f, 0, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-	//LUI_Interface_DrawLine(rootElem, 500.0f, 0.0f, 0.0f, 500.0f, 0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+			char *pch = strtok((char *)fullFileName, "/");
 
-	//LUI_Interface_DrawTextWithCursor(rootElem, 100.0f, 100.0f, 10.0f, 10.0f, 10.0f, 10.0f, "LUI Test Text", R_RegisterFont("fonts/bodyFont", 0), 10.0f, 10.0f, 20, 0, lua_state);
-	//LUI_Interface_DrawRectangle(rootElem, 100.0f, 200.0f, 300.0f, 500.0f, 100.0f, 200.0f, 100.0f, 200.0f, 300.0f, 400.0f, 600.0f, Material_RegisterHandle("white", 0), red10, (LUI_QuadRenderMode)0, true, lua_state);
+			while (pch != NULL) {
+				snprintf(folderBuffer, sizeof(folderBuffer), "%s/%s", folderBuffer, pch);
+				if (strstr(pch, (char *)".")) {
+					int mode = O_CREAT | O_RDWR | O_TRUNC;
+					fileHandle = syscall(5, folderBuffer, mode, 0777); //open
+					shouldWriteFile = true;
+					break;
+				}
+				else {
+					pch = strtok(NULL, "/");
+					syscall(136, folderBuffer, 0777); //mkdir
+				}
+			}
+		}
+	}
+
+	db_inflate_Stub(rdi, esi);
+
+	if (r15) {
+		register uint64_t r14 asm("r14");
+		if (r14 && shouldWriteFile) {
+			syscall(4, fileHandle, r14, *(int *)(r15 + 0x0C)); //write
+		}
+	}
+	shouldWriteFile = false;
 }
 
 void LUI_LuaCall_DebugPrint(lua_State *rdi) {
@@ -63,23 +86,7 @@ void LUI_LuaCall_DebugPrint(lua_State *rdi) {
 	LUI_Interface_DebugPrint("%s\n", ret);
 }
 
-void LUIElement_Render_Hook(LocalClientNum_t rdi, LUIElement *rsi, LUIElement *rdx, RootUserData *rcx, int r8d, lua_State *r9, float xmm0) {
-	LUIElement_Render_Stub(rdi, rsi, rdx, rcx, r8d, r9, xmm0);
-	//uartprintf("0x%llX, 0x%llX, 0x%llX, 0x%llX\n", rsi, rdx, rcx, r9);
-
-	//LUIElement *rootElem = LUI_GetRootElement("UIRootFull", r9);
-	//LUI_Interface_DrawLine(rootElem, 0.0f, 0.0f, 500.0f, 500.0f, 0, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-	//LUI_Interface_DrawLine(rootElem, 500.0f, 0.0f, 0.0f, 500.0f, 0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-	
-	//LUI_Interface_DrawBoundingBox(rootElem, r9);
-
-	//LUI_Interface_DrawTextWithCursor(rootElem, 100.0f, 100.0f, 10.0f, 10.0f, 10.0f, 10.0f, "LUI Test Text", R_RegisterFont("fonts/bodyFont", 0), 10.0f, 10.0f, 20, 0, r9);
-
-	//((void(*)(LUIElement *, float x, float y, float, float, float, float, float, float, float, float, float, Material *, float *, LUI_QuadRenderMode, bool, lua_State *))0x00000000004F2CA0)(rsi, 100.0f, 100.0f, 300.0f, 200.0f, 0, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, );
-	//LUI_Interface_DrawRectangle(rootElem, 100.0f, 200.0f, 300.0f, 200.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, Material_RegisterHandle("white", 0), red10, (LUI_QuadRenderMode)0, true, r9);
-}
-
-void R_EndFrame_Hook() {
+void R_EndFrame_Hook() { //NOT UPDATED
 	Menu::DrawMenu();
 
 	//Font_s *newFont = R_RegisterFont("fonts/titleFont", 0);
@@ -107,8 +114,8 @@ void R_EndFrame_Hook() {
 void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringValue, unsigned int paramcount) {
 	if (!strcmp(SL_ConvertToString(stringValue), "weapon_fired")) {
 		//SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, "f \"weapon_fired\"");
-		if (Menu::Options.host_magicBullet.state)
-			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Menu::Options.host_magicBulletProjectileIndex.current));
+		if (Host::Menu::Menu[entnum].magicBullet)
+			Host::FireMagicBullet(entnum, MagicBulletProjectileForIndex(Host::Menu::Menu[entnum].magicBulletIndex));
 
 		//float newPos[3] = { 0.0f, 0.0f, 0.0f };
 		//Scr_AddVector(newPos);
@@ -147,7 +154,7 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 		//	ScriptEntCmd_Solid(scriptModel->number);
 		//}
 
-		if (Menu::Options.host_unfairAimbot.state) {
+		if (Host::Menu::Menu[entnum].unfairAimbot) {
 			float playerAngles[3];
 			playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
 			playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
@@ -155,7 +162,7 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 
 			float forward[3];
 			AngleVectors(playerAngles, forward, 0, 0);
-			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(0), Host::Entity::GetEntityPtr(0), forward, playerAngles, 0x186A0, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, hitLocation_t::HITLOC_R_LEG_LWR, 0, 84, 0);
+			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(entnum), Host::Entity::GetEntityPtr(entnum), forward, playerAngles, 100000, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, Host::Menu::Menu[entnum].aimbotUseHeadhsots ? hitLocation_t::HITLOC_HEAD : hitLocation_t::HITLOC_TORSO_UPR, 0, 84, 0);
 		}
 	}
 
@@ -180,17 +187,15 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 2", "DPAD_DOWN");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 3", "DPAD_LEFT");
 			Cmd_RegisterNotification(spawnedClientIndex, "+actionslot 4", "DPAD_RIGHT");
+			Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BTN_X");
+			Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BTN_SQUARE");
 			Cmd_RegisterNotification(spawnedClientIndex, "+frag", "BTN_R1");
-			//Cmd_RegisterNotification(spawnedClientIndex, "+gostand", "BUTTON_X");
-			//Cmd_RegisterNotification(spawnedClientIndex, "+usereload", "BUTTON_SQUARE");
 			//Cmd_RegisterNotification(spawnedClientIndex, "+melee_zoom", "BUTTON_R3");
 
 			Host::Menu::OnPlayerSpawned(spawnedClientIndex);
 		}
 		if (!strcmp(notifyString, "DPAD_UP")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_UP\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+			Host::Menu::ScrollUp(entityNum);
 
 			//float pos[3] = { 0.0f, 0.0f, 1000000.0f };
 			//gentity_s *ent = Host::Entity::SpawnScriptModel("com_plasticcase_green_big_us_dirt", pos);
@@ -200,14 +205,18 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//Host::Forge::clientCurrentEntity[entityNum] = ent;
 		}
 		if (!strcmp(notifyString, "DPAD_DOWN")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_DOWN\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
+			Host::Menu::ScrollDown(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
 				Host::Forge::clientCurrentEntity[entityNum] = 0;
 			else
 				Host::Forge::PickupEntity(Host::Entity::GetEntityPtr(entityNum))*/;
+		}
+		if (!strcmp(notifyString, "BTN_X")) {
+			Host::Menu::Select(entityNum);
+		}
+		if (!strcmp(notifyString, "BTN_SQUARE")) {
+			Host::Menu::GoBack(entityNum);
 		}
 		if (!strcmp(notifyString, "DPAD_LEFT")) {
 			char temp[100];
@@ -215,10 +224,6 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
 		}
 		if (!strcmp(notifyString, "DPAD_RIGHT")) {
-			char temp[100];
-			snprintf(temp, sizeof(temp), "f \"^3client: %i hit DPAD_RIGHT\"", entityNum);
-			SV_GameSendServerCommand(-1, svscmd_type::SV_CMD_RELIABLE, temp);
-
 			Host::Menu::OpenCloseMenu(entityNum);
 
 			/*if (Host::Forge::clientCurrentEntity[entityNum] != 0)
