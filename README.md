@@ -6,8 +6,8 @@ This project compiles to a .elf file which can be loaded with the help of payloa
 
 
 ## Goals
-- Local Engine/LUI drawing menu
-- All client menu with hud elements
+- Local Engine/LUI drawing menu ✔️
+- All client menu with hud elements ✔️
 - Forge Mode
 - Gamemodes (Zombieland, possibly AI Zombies, ...)
 

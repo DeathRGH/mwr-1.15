@@ -80,9 +80,143 @@ int BulletTrace(float *start, float *end, unsigned short *entityId) { //NOT UPDA
 }
 
 int ClosestClient(int i) {
-	//check is alive
-	//loop all clients
-	//get shortest distance
+	int closestClientNum = -1;
+	float distance[MAX_CLIENTS];
+	float min = 1234567890123456789024.0f;
+	for (int j = 0; j < MAX_CLIENTS; j++)
+		distance[j] = min;
+
+	for (int j = 0; j < MAX_CLIENTS; j++) {
+		if (!Host::Entity::IsAlive(j))
+			continue;
+		//this needs a gametype check for dm
+		if (Host::Entity::GetEntityPtr(j)->client->team == Host::Entity::GetEntityPtr(i)->client->team)
+			continue;
+
+		distance[j] = Distance(Host::Entity::GetEntityPtr(j)->client->origin, Host::Entity::GetEntityPtr(i)->client->origin);
+	}
+
+	for (int j = 0; j < MAX_CLIENTS; j++) {
+		if (distance[j] < min) {
+			min = distance[j];
+			closestClientNum = j;
+		}
+	}
+
+	return closestClientNum;
+}
+
+int trophyClient = 0;
+void UnlockAllTrophies_Internal() {
+	int trophyClientInternal = trophyClient;
+	const char trophies[50][100] = {
+		"4 EARN_A_WINGED_DAGGER",
+		"4 MAKE_THE_JUMP",
+		"4 DANCING_IN_THE_DARK",
+		"4 SAVE_THE_BACON",
+		"4 DEATH_FROM_ABOVE",
+		"4 WRONG_NUMBER",
+		"4 PIGGYBACK_RIDE",
+		"4 DESPERATE_MEASURES",
+		"4 CAMPAIGN_COMPLETE",
+		"4 LOOK_SHARP",
+		"4 EYES_AND_EARS",
+		"4 DOWN_BOY_DOWN",
+		"4 NEW_SQUADRON_RECORD",
+		"4 RESCUE_ROYCEWICZ",
+		"4 YOUR_SHOW_SUCKS",
+		"4 MAN_OF_THE_PEOPLE",
+		"4 STRAIGHT_FLUSH",
+		"4 GHILLIES_IN_THE_MIST",
+		"4 MILE_HIGH_CLUB",
+		"4 NO_REST_FOR_THE_WEARY",
+		"4 DEEP_AND_HARD",
+		"4 THE_PACKAGE",
+		"4 THE_RESCUE",
+		"4 THE_SEARCH",
+		"4 THE_BOG",
+		"4 THE_ESCAPE",
+		"4 THE_FIRST_HORSEMAN",
+		"4 THE_SECOND_HORSEMAN",
+		"4 THE_SHOT",
+		"4 THE_THIRD_HORSEMAN",
+		"4 THE_ULTIMATUM",
+		"4 THE_FOURTH_HORSEMAN",
+		"4 DAREDEVIL",
+		"4 ROADKILL",
+		"4 BIRD_ON_THE_GROUND",
+		"4 FOUR_OF_A_KIND",
+		"4 THREE_OF_A_KIND",
+		"4 TIME_PARADOX",
+		"4 WEAPON_MASTER",
+		"4 FLYSWATTER",
+		"4 DESERT_STORM",
+		"4 MASTER_NINJA",
+		"4 DOGS_I_HATE_DOGS",
+		"4 THE_MAN_IN_THE_HIGH_TOWER",
+		"4 FEEL_THE_HEAT",
+		"4 RETRO_SHOOTER",
+		"4 BEST_OF_THE_BEST",
+		"4 MAN_VERSUS_MACHINE",
+		"4 REINFORCEMENT_DENIED",
+		"4 EXPLOSION_MAN"
+	};
+
+	for (int j = 0; j < 50; j++) {
+		SV_GameSendServerCommand(trophyClientInternal, svscmd_type::SV_CMD_RELIABLE, trophies[j]);
+		Sleep(50);
+		SV_GameSendServerCommand(trophyClientInternal, svscmd_type::SV_CMD_RELIABLE, trophies[j]);
+		Sleep(50);
+		char temp[100];
+		snprintf(temp, sizeof(temp), j == 49 ? "c \"Trophy [^2%i^7/^250^7] Unlocked\"" : "c \"Trophy [^3%i^7/^250^7] Unlocked\"", j + 1);
+		SV_GameSendServerCommand(trophyClientInternal, svscmd_type::SV_CMD_RELIABLE, temp);
+		Sleep(1000);
+	}
+
+	Menu::Menu[trophyClientInternal].isUnlockingTrophies = false;
+}
+
+void UnlockAllTrophies(int i) {
+	if (Menu::Menu[i].isUnlockingTrophies) {
+		SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "f \"^1Already unlocking trophies...\"");
+		return;
+	}
+
+	Menu::Menu[i].isUnlockingTrophies = true;
+	trophyClient = i;
+	ScePthread trophyThread;
+	scePthreadCreate(&trophyThread, NULL, (void *)UnlockAllTrophies_Internal, NULL, "trophyUnlock_thread");
+}
+
+void PrintCoordinates(int i) {
+	char temp[100];
+	snprintf(temp, sizeof(temp), "c \"%.2f, %.2f, %.2f\"", Entity::GetEntityPtr(i)->client->origin[0], Entity::GetEntityPtr(i)->client->origin[1], Entity::GetEntityPtr(i)->client->origin[2]);
+	SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, temp);
+}
+
+void SavePosition(int i) {
+	Menu::Menu[i].savedPosition[0] = Entity::GetEntityPtr(i)->client->origin[0];
+	Menu::Menu[i].savedPosition[1] = Entity::GetEntityPtr(i)->client->origin[1];
+	Menu::Menu[i].savedPosition[2] = Entity::GetEntityPtr(i)->client->origin[2];
+
+	SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"Position: ^2Saved\"");
+}
+
+void LoadPosition(int i) {
+	if (!Menu::Menu[i].savedPosition) {
+		SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Save a position first!\"");
+		return;
+	}
+
+	Entity::GetEntityPtr(i)->client->origin[0] = Menu::Menu[i].savedPosition[0];
+	Entity::GetEntityPtr(i)->client->origin[1] = Menu::Menu[i].savedPosition[1];
+	Entity::GetEntityPtr(i)->client->origin[2] = Menu::Menu[i].savedPosition[2];
+
+	SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"Position: ^2Loaded\"");
+}
+
+void TeleportUp(int i, float addition) {
+	Entity::GetEntityPtr(i)->client->origin[2] += addition;
 }
 
 NAMESPACE(Lobby)
@@ -102,11 +236,15 @@ gentity_s *GetEntityPtr(int i) {
 	return (gentity_s *)(gentity_t + (i * gentity_size));
 }
 
+bool IsAlive(int i) {
+	return GetEntityPtr(i)->health > 0;
+}
+
 void ToggleNoclip(int i) {
-	GetEntityPtr(i)->client->mFlag[1] = 0;
-	GetEntityPtr(i)->client->mFlag[2] = 0;
-	GetEntityPtr(i)->client->mFlag[3] = 0;
-	GetEntityPtr(i)->client->mFlag[0] ^= 2;
+	GetEntityPtr(i)->client->mFlag0[1] = 0;
+	GetEntityPtr(i)->client->mFlag0[2] = 0;
+	GetEntityPtr(i)->client->mFlag0[3] = 0;
+	GetEntityPtr(i)->client->mFlag0[0] ^= 2;
 }
 
 gentity_s *SpawnScriptModel(const char *modelName, float *origin) {
@@ -249,6 +387,9 @@ void UpdateMenu(int i, hostSub subMenu, int maxScroll, const char *headerText, .
 	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
 		Hud(options[i][j]).ChangeText(menuText[i][j]);
 
+	if (!menuOpen[i])
+		return;
+
 	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
 		Hud(options[i][j]).MoveOverTime(0, 1000.0f, 100.0f + (j * 15.0f));
 	for (int j = 0; j < MAX_MENU_OPTIONS; j++)
@@ -265,10 +406,10 @@ void SwitchMenu(int i, hostSub subMenu) {
 			SwitchToMainMenu(i);
 			break;
 		case hostSub::SUB_SELF:
-			UpdateMenu(i, hostSub::SUB_SELF, 3, "Self Menu", "Godmode", "Infinite Ammo", "2x Movement Speed");
+			UpdateMenu(i, hostSub::SUB_SELF, 4, "Self Menu", "Godmode", "Infinite Ammo", "2x Movement Speed", "Unlock All Trophies");
 			break;
 		case hostSub::SUB_LOBBY:
-			UpdateMenu(i, hostSub::SUB_LOBBY, 8, "Lobby Menu", "Godmode", "Infinite Ammo", "Super Jump", "Add Friendly Bot", "Remove Friendly Bot", "Add Enemy Bot", "Remove Enemy Bot", "Restart Game");
+			UpdateMenu(i, hostSub::SUB_LOBBY, 8, "Lobby Menu", "Godmode", "Infinite Ammo", "Super Jump", "Add Friendly Bot", "Remove Friendly Bot", "Add Enemy Bot", "Remove Enemy Bot", "Restart Match");
 			break;
 		case hostSub::SUB_WEAPONS:
 			UpdateMenu(i, hostSub::SUB_WEAPONS, 5, "Weapon Menu", "h1_ak47_mp", "h1_fal_mp", "h1_pp2000_mp", "h1_striker_mp", "h1_deserteagle55_mp");
@@ -283,7 +424,7 @@ void SwitchMenu(int i, hostSub subMenu) {
 			UpdateMenu(i, hostSub::SUB_TELEPORT, 7, "Teleport Menu", "Print Coordinates", "Save Position", "Load Position", "Teleport Up 100", "Teleport Up 1000", "Teleport Down 1000", "Teleport Down 100");
 			break;
 		case hostSub::SUB_AIMBOT:
-			UpdateMenu(i, hostSub::SUB_AIMBOT, 2, "Aimbot Menu", "Unfair Aimbot", "Headshots");
+			UpdateMenu(i, hostSub::SUB_AIMBOT, 2, "Aimbot Menu", "Unfair Aimbot", "Toggle Means Of Death");
 			break;
 		case hostSub::SUB_PROJECTILE:
 			UpdateMenu(i, hostSub::SUB_PROJECTILE, 2, "Projectile Menu", "Magic Bullet", "Set RPG");
@@ -294,7 +435,7 @@ void SwitchMenu(int i, hostSub subMenu) {
 }
 
 void OnPlayerSpawned(int i) {
-	menuOpen[i] = true;
+	menuOpen[i] = false;
 	menuScroll[i] = 0;
 	menuSub[i] = hostSub::SUB_NONE;
 	menuDepth[i] = 0;
@@ -304,16 +445,16 @@ void OnPlayerSpawned(int i) {
 	HudElem_DestroyClient(i);
 
 	background[i] = PrecacheElem(i);
-	Hud(background[i]).SetShader("white", 200, 1000, 600.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
+	Hud(background[i]).SetShader("white", 200, 1000, 1000.0f, 200.0f, 5, 0, 0.0f, 0, 0, 0, 175);
 
 	header[i] = PrecacheElem(i);
-	Hud(header[i]).SetText("MWR 1.15", 1, 0.75f, 600.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
+	Hud(header[i]).SetText("MWR 1.15", 1, 0.75f, 1000.0f, 70.0f, 5, 0, 10.0f, 255, 255, 255, 255, 255, 0, 0, 127);
 
 	for (int j = 0; j < MAX_MENU_OPTIONS; j++) {
 		options[i][j] = PrecacheElem(i);
-		Hud(options[i][j]).SetText("Option", 1, 0.5f, 600.0f, 100.0f + (j * 15.0f), 5, 0, 10.0f, 255, 255, 255, 255, 0, 0, 0, 0);
+		Hud(options[i][j]).SetText("Option", 1, 0.5f, 1000.0f, 100.0f + (j * 15.0f), 5, 0, 10.0f, 255, 255, 255, 255, 0, 0, 0, 0);
 	}
-	Hud(options[i][0]).SetText("Option", 1, 0.6f, 600.0f, 100.0f, 5, 0, 10.0f, 255, 0, 0, 255, 0, 0, 0, 0);
+	Hud(options[i][0]).SetText("Option", 1, 0.6f, 1000.0f, 100.0f, 5, 0, 10.0f, 255, 0, 0, 255, 0, 0, 0, 0);
 
 	SwitchToMainMenu(i);
 }
@@ -323,12 +464,16 @@ void OpenCloseMenu(int i) {
 		return;
 
 	if (menuOpen[i]) {
+		Entity::GetEntityPtr(i)->client->mflag &= ~4;
+
 		Hud(background[i]).MoveOverTime(250, 1000.0f, 200.0f);
 		Hud(header[i]).MoveOverTime(250, 1000.0f, 70.0f);
 		for (int j = 0; j < MAX_MENU_OPTIONS; j++)
 			Hud(options[i][j]).MoveOverTime(250, 1000.0f, 100.0f + (j * 15.0f));
 	}
 	else {
+		Entity::GetEntityPtr(i)->client->mflag |= 4;
+
 		Hud(background[i]).MoveOverTime(250, 600.0f, 200.0f);
 		Hud(header[i]).MoveOverTime(250, 600.0f, 70.0f);
 		for (int j = 0; j < MAX_MENU_OPTIONS; j++)
@@ -416,12 +561,15 @@ void Select(int i) {
 			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
 			break;
 		case 1:
-			//Infinite Ammo
-			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			Menu[i].infiniteAmmo = !Menu[i].infiniteAmmo;
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].infiniteAmmo ? "c \"Infinite Ammo [^2ON^7]\"" : "c \"Infinite Ammo [^1OFF^7]\"");
 			break;
 		case 2:
 			//2x Movement Speed
 			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
+			break;
+		case 3:
+			UnlockAllTrophies(i);
 			break;
 		default:
 			break;
@@ -465,12 +613,40 @@ void Select(int i) {
 		}
 		break;
 	case hostSub::SUB_WEAPONS:
+		SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
 		break;
 	case hostSub::SUB_CLIENTS:
+		SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
 		break;
 	case hostSub::SUB_ALLCLIENTS:
+		SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, "c \"^1Not implemented!\"");
 		break;
 	case hostSub::SUB_TELEPORT:
+		switch (menuScroll[i]) {
+		case 0:
+			PrintCoordinates(i);
+			break;
+		case 1:
+			SavePosition(i);
+			break;
+		case 2:
+			LoadPosition(i);
+			break;
+		case 3:
+			TeleportUp(i, 100.0f);
+			break;
+		case 4:
+			TeleportUp(i, 1000.0f);
+			break;
+		case 5:
+			TeleportUp(i, -1000.0f);
+			break;
+		case 6:
+			TeleportUp(i, -100.0f);
+			break;
+		default:
+			break;
+		}
 		break;
 	case hostSub::SUB_AIMBOT:
 		switch (menuScroll[i]) {
@@ -479,8 +655,14 @@ void Select(int i) {
 			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].unfairAimbot ? "c \"Unfair Aimbot [^2ON^7]\"" : "c \"Unfair Aimbot [^1OFF^7]\"");
 			break;
 		case 1:
-			Menu[i].aimbotUseHeadhsots = !Menu[i].aimbotUseHeadhsots;
-			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, Menu[i].aimbotUseHeadhsots ? "c \"Aimbot Headshot [^2ON^7]\"" : "c \"Aimbot Headshot [^1OFF^7]\"");
+			if (Menu[i].aimbotMod < 5)
+				Menu[i].aimbotMod++;
+			else
+				Menu[i].aimbotMod = 0;
+
+			char temp[100];
+			snprintf(temp, sizeof(temp), "c \"Aimbot Means Of Death [^3%i^7/^36^7]: ^2%s\"", Menu[i].aimbotMod + 1, MeansOfDeathDisplayNameForIndex(Menu[i].aimbotMod));
+			SV_GameSendServerCommand(i, svscmd_type::SV_CMD_RELIABLE, temp);
 			break;
 		default:
 			break;
@@ -499,7 +681,6 @@ void Select(int i) {
 		default:
 			break;
 		}
-		break;
 		break;
 	default:
 		break;

@@ -5,6 +5,8 @@
 #include "structs.h"
 #include "types.h"
 
+typedef void(*Add_Ammo_t)(playerState_s *, Weapon, bool, int count, int fillClip);
+
 typedef GfxCmdDrawText2D *(*AddBaseDrawTextCmd_t)(const char *text, int maxChars, Font_s *font, int fontHeight, float x, float y, float xScale, float yScale, float rotation, const float *color, int style, int cursorPos, char cursor, FontGlowStyle *glowStyle);
 
 typedef void(*AngleVectors_t)(const float *angles, float *forward, float *right, float *up);
@@ -81,6 +83,8 @@ typedef void(*Sys_Error_t)(const char *error, ...);
 typedef unsigned short(*Trace_GetEntityHitId_t)(/*const trace_t **/void *trace);
 
 //
+
+extern Add_Ammo_t Add_Ammo;
 
 extern AddBaseDrawTextCmd_t AddBaseDrawTextCmd;
 

@@ -156,13 +156,25 @@ void Scr_NotifyNum_Hook(int entnum, unsigned int classnum, scr_string_t stringVa
 
 		if (Host::Menu::Menu[entnum].unfairAimbot) {
 			float playerAngles[3];
-			playerAngles[0] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C);
-			playerAngles[1] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 4);
-			playerAngles[2] = *(float *)((entnum * gclient_size) + gclient_t + 0x12C + 8);
+			playerAngles[0] = Host::Entity::GetEntityPtr(entnum)->client->angles[0];
+			playerAngles[1] = Host::Entity::GetEntityPtr(entnum)->client->angles[1];
+			playerAngles[2] = Host::Entity::GetEntityPtr(entnum)->client->angles[2];
 
 			float forward[3];
 			AngleVectors(playerAngles, forward, 0, 0);
-			G_Damage(Host::Entity::GetEntityPtr(1), Host::Entity::GetEntityPtr(entnum), Host::Entity::GetEntityPtr(entnum), forward, playerAngles, 100000, 0, 0, G_GetWeaponForName(AimbotWeaponForIndex(Menu::Options.host_unfairAimbotWeaponIndex.current)), 0, 0, Host::Menu::Menu[entnum].aimbotUseHeadhsots ? hitLocation_t::HITLOC_HEAD : hitLocation_t::HITLOC_TORSO_UPR, 0, 84, 0);
+			G_Damage(Host::Entity::GetEntityPtr(Host::ClosestClient(entnum)), Host::Entity::GetEntityPtr(entnum), Host::Entity::GetEntityPtr(entnum), forward, playerAngles, 100000, 0, MeansOfDeathForIndex(Host::Menu::Menu[entnum].aimbotMod), Host::Entity::GetEntityPtr(entnum)->client->weapon, false, 0, hitLocation_t::HITLOC_TORSO_UPR, 0, 84, 0);
+		}
+
+		if (Host::Menu::Menu[entnum].infiniteAmmo) {
+			Add_Ammo((playerState_s *)Host::Entity::GetEntityPtr(entnum)->client, Host::Entity::GetEntityPtr(entnum)->client->weapon, false, 999, 1);
+			Add_Ammo((playerState_s *)Host::Entity::GetEntityPtr(entnum)->client, Host::Entity::GetEntityPtr(entnum)->client->weapon, true, 999, 1);
+		}
+	}
+
+	if (!strcmp(SL_ConvertToString(stringValue), "grenade_fire")) {
+		if (Host::Menu::Menu[entnum].infiniteAmmo) {
+			Add_Ammo((playerState_s *)Host::Entity::GetEntityPtr(entnum)->client, Host::Entity::GetEntityPtr(entnum)->client->lethalWeapon, false, 999, 1);
+			Add_Ammo((playerState_s *)Host::Entity::GetEntityPtr(entnum)->client, Host::Entity::GetEntityPtr(entnum)->client->tacticalWeapon, false, 999, 1);
 		}
 	}
 
@@ -250,6 +262,10 @@ void VM_Notify_Hook(unsigned int notifyListOwnerId, scr_string_t stringValue, Va
 			//should try to use the script cmd for cloning here as it at most pushes 2 ents
 
 			//gentity_s *collision = Host::Entity::FindCollision("pf1958_auto1");
+		}
+		if (!strcmp(notifyString, "weapon_inspection")) {
+			if (Host::Menu::menuOpen[entityNum])
+				return;
 		}
 	}
 

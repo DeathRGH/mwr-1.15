@@ -17,6 +17,13 @@ int BulletTrace(float *start, float *end, unsigned short *entityId);
 
 int ClosestClient(int i);
 
+void UnlockAllTrophies(int i);
+
+void PrintCoordinates(int i);
+void SavePosition(int i);
+void LoadPosition(int i);
+void TeleportUp(int i, float addition);
+
 NAMESPACE(Lobby)
 
 void Godmode(bool state);
@@ -26,6 +33,7 @@ END
 NAMESPACE(Entity)
 
 gentity_s *GetEntityPtr(int i);
+bool IsAlive(int i);
 void ToggleNoclip(int i);
 gentity_s *SpawnScriptModel(const char *modelName, float *origin);
 void CloneBrushModelToScriptModel(gentity_s *scriptModel, gentity_s *brushModel);
@@ -55,10 +63,13 @@ enum hostSub {
 #define MAX_MENU_DEPTH 5
 
 struct MenuStruct {
+	bool infiniteAmmo;
+	bool isUnlockingTrophies;
 	bool unfairAimbot;
-	bool aimbotUseHeadhsots;
+	int aimbotMod;
 	bool magicBullet;
 	int magicBulletIndex;
+	float savedPosition[3];
 };
 
 extern MenuStruct Menu[MAX_MENU_CLIENTS];

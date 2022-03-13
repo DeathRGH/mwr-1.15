@@ -12,8 +12,8 @@ Hud::Hud(game_hudelem_s *elem) {
 game_hudelem_s *PrecacheElem(int clientId) {
 	game_hudelem_s *elem = HudElem_Alloc(clientId, 0);
 	elem->clientNum = clientId;
-	elem->elem.targetEnt1 = 1;
-	elem->elem.targetEnt2 = 1;
+	elem->elem.targetEnt1 = 20;
+	elem->elem.targetEnt2 = 20;
 	return elem;
 }
 

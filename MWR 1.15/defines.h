@@ -77,6 +77,9 @@ const char *AimbotBoneForIndex(int index);
 const char *MagicBulletProjectileForIndex(int index);
 const char *AimbotWeaponForIndex(int index);
 
+int MeansOfDeathForIndex(int index);
+const char *MeansOfDeathDisplayNameForIndex(int index);
+
 const char *GetRawWeaponNameForIndex(int id);
 const char *GetWeaponNameForIndex(int id);
 
