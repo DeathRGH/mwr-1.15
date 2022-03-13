@@ -3,6 +3,8 @@
 NAMESPACE(Functions)
 
 void Init() {
+	Add_Ammo = (Add_Ammo_t)0x0000000000A68EC0;
+
 	AddBaseDrawTextCmd = (AddBaseDrawTextCmd_t)0x0000000000DC0220;
 
 	AngleVectors = (AngleVectors_t)0x0000000000CBCFB0;

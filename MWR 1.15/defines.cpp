@@ -301,6 +301,40 @@ const char *AimbotWeaponForIndex(int index) {
 		return "defaultweapon_mp";
 }
 
+int MeansOfDeathForIndex(int index) {
+	if (index == 0)
+		return meansOfDeath_t::MOD_UNKNOWN;
+	if (index == 1)
+		return meansOfDeath_t::MOD_HEAD_SHOT;
+	if (index == 2)
+		return meansOfDeath_t::MOD_MELEE;
+	if (index == 3)
+		return meansOfDeath_t::MOD_FALLING;
+	if (index == 4)
+		return meansOfDeath_t::MOD_IMPACT;
+	if (index == 5)
+		return meansOfDeath_t::MOD_SUICIDE;
+	else
+		return meansOfDeath_t::MOD_UNKNOWN;
+}
+
+const char *MeansOfDeathDisplayNameForIndex(int index) {
+	if (index == 0)
+		return "Default";
+	if (index == 1)
+		return "Headshot";
+	if (index == 2)
+		return "Melee";
+	if (index == 3)
+		return "Falling";
+	if (index == 4)
+		return "Impact";
+	if (index == 5)
+		return "Suicide";
+	else
+		return "Default";
+}
+
 const char *GetRawWeaponNameForIndex(int id) {
 	return (char *)(*(long long *)(*(long long *)(bg_weaponCompleteDefs + ((id * 8) & 0x3FC)) + 0x10));
 }

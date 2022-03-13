@@ -20,14 +20,15 @@ enum entityType_t {
 	ET_FX = 0x08,
 	ET_LOOP_FX = 0x09,
 	ET_PRIMARY_LIGHT = 0x0A,
-	ET_HELICOPTER = 0x0B,
-	ET_PLANE = 0x0C,
-	ET_VEHICLE = 0x0D,
-	ET_VEHICLE_COLLMAP = 0x0E,
-	ET_VEHICLE_CORPSE = 0x0F,
-	ET_VEHICLE_SPAWNER = 0x10,
-	ET_AGENT = 0x11,
-	ET_AGENT_CORPSE = 0x12
+	ET_TURRET = 0x0B,
+	ET_HELICOPTER = 0x0C,
+	ET_PLANE = 0x0D,
+	ET_VEHICLE = 0x0E,
+	ET_VEHICLE_COLLMAP = 0x0F,
+	ET_VEHICLE_CORPSE = 0x10,
+	ET_VEHICLE_SPAWNER = 0x11,
+	ET_AGENT = 0x12,
+	ET_AGENT_CORPSE = 0x13
 };
 
 enum GfxRenderCommand {
@@ -93,6 +94,29 @@ enum LocalClientNum_t : int {
 enum LUI_QuadRenderMode {
 	//...
 };
+
+enum meansOfDeath_t { //dumped from 0x0000000000FAEEF7
+	MOD_UNKNOWN = 0x00,
+	MOD_PISTOL_BULLET = 0x01,
+	MOD_RIFLE_BULLET = 0x02,
+	MOD_EXPLOSIVE_BULLET = 0x03,
+	MOD_GRENADE = 0x04,
+	MOD_GRENADE_SPLASH = 0x05,
+	MOD_PROJECTILE = 0x06,
+	MOD_PROJECTILE_SPLASH = 0x07,
+	MOD_MELEE = 0x08,
+	MOD_HEAD_SHOT = 0x09,
+	MOD_MELEE_DOG = 0x0A,
+	MOD_MELEE_ALIEN = 0x0B,
+	MOD_CRUSH = 0x0C,
+	MOD_FALLING = 0x0D,
+	MOD_SUICIDE = 0x0E,
+	MOD_TRIGGER_HURT = 0x0F,
+	MOD_EXPLOSIVE = 0x10,
+	MOD_IMPACT = 0x11,
+	MOD_ENERGY = 0x12
+};
+
 
 enum svscmd_type {
 	SV_CMD_CAN_IGNORE = 0,
@@ -203,45 +227,66 @@ struct usercmd_s { // 0x44 AW
 	//...
 };
 
+union Weapon {
+	int data;
+};
+
 struct gclient_s { //0x5000
-	//mwr:
-	//0x5C fof flag
-	//...
-	char _pad0[0x02];	//0x00
-	char mFlag[4];		//0x02
-	//...
-	int serverTime;		//0x4C //NOT UPDATED
-	//...
-	usercmd_s *ucmd;	//0x4F9C //NOT UPDATED
-	usercmd_s *olducmd;	//0x4FE0 //NOT UPDATED
-	//...
+	char _pad0[0x02];		//0x00
+	char mFlag0[4];			//0x02
+	char _pad1[0x46];		//0x06
+	int serverTime;			//0x4C
+	char _pad2[0x0C];		//0x50
+	int fofFlag;			//0x5C
+	char _pad3[0x18];		//0x60
+	float origin[3];		//0x78
+	char _pad4[0x0C];		//0x84
+	float deltaAngles[3];	//0x90
+	char _pad5[0x90];		//0x9C
+	float angles[3];		//0x12C
+	char _pad6[0x250];		//0x138
+	Weapon currentOffhand;	//0x388
+	Weapon lethalWeapon;	//0x38C
+	Weapon tacticalWeapon;	//0x390
+	Weapon weapon;			//0x394
+	char _pad7[0x4588];		//0x398
+	char name0[0x20];		//0x4920
+	char _pad8[0x42];		//0x4940
+	char name1[0x20];		//0x4982
+	char _pad9[0x62];		//0x49A2
+	int team;				//0x4A04
+	char _pad10[0x1F8];		//0x4A08
+	int mflag;				//0x4C00
+	char _pad11[0x3FC];		//0x4C04
+	//usercmd_s *ucmd;		//0x4F9C //NOT UPDATED
+	//usercmd_s *olducmd;	//0x4FE0 //NOT UPDATED
 };
 
 struct gentity_s { // 0x2E0
 	//mwr:
 	//0x3C viewmodel
-	short number;			//0x00 //NOT UPDATED
-	short type;				//0x02 //NOT UPDATED
-	char _pad0[0x88];		//0x04
-	float angles[3];		//0x8C //NOT UPDATED //0x144 ???
-	char _pad1[0xA0];		//0x98
+	short number;			//0x00
+	short type;				//0x02
+	char _pad0[0x8C];		//0x04
+	float angles[3];		//0x90
+	char _pad1[0x9C];		//0x9C
 	float origin[3];		//0x138
 	char _pad2[0x14];		//0x144
 	gclient_s *client;		//0x158
 	char _pad3[0x28];		//0x160
 	short modelIndex;		//0x188
 	char _pad4[0x0A];		//0x18A
-	int classname;			//0x194   //ScriptEntCmd_Solid + 0x5F   mov eax, [rbx+194h]  //NOT UPDATED
-	int script_classname;	//0x198 //NOT UPDATED
-	int script_linkName;	//0x19C //NOT UPDATED
-	int target;				//0x1A0 //NOT UPDATED
-	int targetname;			//0x1A4 //NOT UPDATED
-	int u1;					//0x1A8 //NOT UPDATED
-	int spawnflags;			//0x1AC //NOT UPDATED
-	//...
-	int health;				//0x1D0 //NOT UPDATED
-	int maxHealth;			//0x1D4 //NOT UPDATED
-	//...
+	int classname;			//0x194
+	int script_classname;	//0x198
+	int script_linkName;	//0x19C
+	int target;				//0x1A0
+	int targetname;			//0x1A4
+	int u1;					//0x1A8
+	int spawnflags;			//0x1AC
+	char _pad5[0x20];		//0x1B0
+	int health;				//0x1D0
+	int maxHealth;			//0x1D4
+	char _pad6[0x108];		//0x1D8
 };
 
 struct GfxCmdDrawText2D {
@@ -319,10 +364,6 @@ union VariableUnion {
 struct VariableValue {
 	VariableUnion u;
 	int type;
-};
-
-union Weapon {
-	int data;
 };
 
 

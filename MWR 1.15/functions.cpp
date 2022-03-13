@@ -2,6 +2,8 @@
 
 #include "imports.h"
 
+Add_Ammo_t Add_Ammo;
+
 AddBaseDrawTextCmd_t AddBaseDrawTextCmd;
 
 AngleVectors_t AngleVectors;
@@ -159,6 +161,10 @@ void Cmd_RegisterNotification(int clientNum, const char *commandString, const ch
 	*(int *)0x0000000002DC9610 = ++numOfNotifications;
 }
 
+void Cmd_UnregisterNotification(int clientNum, const char *commandString, const char *notifyString) {
+
+}
+
 int G_LocalizedStringIndex(const char *string) { //reversed from 0x0000000000A66DA0 (HECmd_SetText + 0x90)
 	int create = *(int *)0x000000000B0FE8B0;
 	return G_FindConfigstringIndex(string, (ConfigString)0x21D, 0x28A, create == 0 ? 1 : 0, "localized string");
@@ -199,8 +205,8 @@ void HudElem_DestroyClient(int clientIndex) { //custom
 	
 	int offset = 0;
 	uint64_t g_hudelems = 0x000000000B0BC840;
-	while (offset < 0x30000) { //elem + 0x00 && elem + 0x01 //custom check applied in PrecacheElem
-		if (*(short *)(g_hudelems + offset + 0x00) == 1 && *(short *)(g_hudelems + offset + 0x02) == 1 && *(int *)(g_hudelems + offset + 0xC0) == clientIndex)
+	while (offset < 0x30000) { //20 at elem + 0x00 && elem + 0x02 //custom check applied in PrecacheElem
+		if (*(short *)(g_hudelems + offset + 0x00) == 20 && *(short *)(g_hudelems + offset + 0x02) == 20 && *(int *)(g_hudelems + offset + 0xC0) == clientIndex)
 			*(int *)(g_hudelems + offset + 0x1C) = he_type_t::HE_TYPE_FREE;
 		offset += 0xD0;
 	}
